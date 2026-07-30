@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Auth\Commands\RegisterChef\" />
+    <Folder Include="Features\Auth\DTOs\" />
+    <Folder Include="Features\Auth\Mappings\" />
+    <Folder Include="Features\Auth\Queries\" />
+    <Folder Include="Features\Common\Behaviours\" />
+    <Folder Include="Features\Common\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChefNear.Domain\ChefNear.Domain.csproj" />
+    <ProjectReference Include="..\ChefNear.Shared\ChefNear.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
