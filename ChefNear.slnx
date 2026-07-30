@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="ChefNear.API/ChefNear.API.csproj" Id="faf103d2-1131-4151-afac-ea78081a8766" />
+    <Project Path="src/ChefNear.API/ChefNear.API.csproj" />
     <Project Path="src/ChefNear.Application/ChefNear.Application.csproj" />
     <Project Path="src/ChefNear.Domain/ChefNear.Domain.csproj" />
     <Project Path="src/ChefNear.Infrastructure/ChefNear.Infrastructure.csproj" />
