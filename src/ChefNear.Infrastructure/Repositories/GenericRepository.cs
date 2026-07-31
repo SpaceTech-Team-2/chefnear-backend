@@ -1,61 +1,56 @@
-#nullable enable
-
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using ChefNear.Domain.Entities;
-using ChefNear.Domain.Repositories;
+using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Domain.Common;
 using ChefNear.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChefNear.Infrastructure.Repositories;
 
-public class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId>
-    where TEntity : BaseEntity<TId>
+
+public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    protected readonly ApplicationDbContext _dbContext;
-    protected readonly DbSet<TEntity> _dbSet;
+    private readonly ChefNearDbContext _dbContext;
 
-    public GenericRepository(ApplicationDbContext dbContext)
+    public GenericRepository(ChefNearDbContext dbContext)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _dbSet = _dbContext.Set<TEntity>();
+        _dbContext = dbContext;
     }
 
-    public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public virtual async Task<T?> GetByIdAsync(Guid id)
     {
-        return await _dbSet.FindAsync(new object[] { id! }, cancellationToken);
+        return await _dbContext.Set<T>().FindAsync(id);
+    }
+    public virtual async Task<int> SaveAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<T>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync(cancellationToken);
+        return await _dbContext.Set<T>().ToListAsync();
     }
 
-    public async Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate)
     {
-        return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
+        return await _dbContext.Set<T>().Where(predicate).ToListAsync();
     }
 
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<T> AddAsync(T entity)
     {
-        await _dbSet.AddAsync(entity, cancellationToken);
+        await _dbContext.Set<T>().AddAsync(entity);
+        return entity;
     }
 
-    public void Update(TEntity entity)
+    public virtual Task UpdateAsync(T entity)
     {
-        _dbSet.Update(entity);
+        _dbContext.Entry(entity).State = EntityState.Modified;
+        return Task.CompletedTask;
     }
 
-    public void Delete(TEntity entity)
+    public virtual Task DeleteAsync(T entity)
     {
-        entity.IsDeleted = true;
-        _dbSet.Update(entity);
-    }
-}
-
-public class GenericRepository<TEntity> : GenericRepository<TEntity, int>, IGenericRepository<TEntity>
-    where TEntity : BaseEntity<int>
-{
-    public GenericRepository(ApplicationDbContext dbContext) : base(dbContext)
-    {
+        _dbContext.Set<T>().Remove(entity);
+        return Task.CompletedTask;
     }
 }

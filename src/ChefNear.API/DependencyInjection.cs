@@ -1,17 +1,14 @@
 using Asp.Versioning;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
 namespace ChefNear.API;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddApiServices(this IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddApplicationPart(typeof(DependencyInjection).Assembly);
 
-        // API Versioning Configuration
         services.AddApiVersioning(options =>
         {
             options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -25,14 +22,7 @@ public static class DependencyInjection
             options.SubstituteApiVersionInUrl = true;
         });
 
-        // Swagger Configuration
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-        services.AddSwaggerGen(options =>
-        {
-            // Add custom swagger configurations here if needed (e.g. Bearer security definition)
-        });
 
-        // CORS Policy Configuration
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>

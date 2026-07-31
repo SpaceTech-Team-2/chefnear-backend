@@ -1,7 +1,10 @@
+using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Interfaces;
+using ChefNear.Application.Model;
 using ChefNear.Domain.Entities;
-using ChefNear.Domain.Repositories;
 using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Repositories;
+using ChefNear.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,10 +20,14 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContext<ChefNearDbContext>(options =>
             options.UseSqlServer(connectionString));
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
 
-        services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
+        services.Configure<AppUrlSettings>(configuration.GetSection("AppUrlSettings"));
+
+
+        services.AddIdentity<User, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
             options.Password.RequiredLength = 6;
@@ -28,12 +35,25 @@ public static class DependencyInjection
             options.Password.RequireUppercase = false;
             options.User.RequireUniqueEmail = true;
         })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddEntityFrameworkStores<ChefNearDbContext>()
         .AddDefaultTokenProviders();
 
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepo, UserRepo>();
+        services.AddScoped<ICategoryRepo, CategoryRepo>();
+        services.AddScoped<IDishImageRepo, DishImageRepo>();
+        services.AddScoped<IDishRepo, DishRepo>();
+        services.AddScoped<IDisputeRepo, DisputeRepo>();
+        services.AddScoped<IIngredientsRepo, IngredentsRepo>();
+        services.AddScoped<INotificationRepo, NotificationRepo>();
+        services.AddScoped<IOrderRepo, OrderRepo>();
+        services.AddScoped<IPaymentRepo, PaymentRepo>();
+        services.AddScoped<IReviewRepo, ReviewRepo>();
+        services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IJWTService, JWTService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }

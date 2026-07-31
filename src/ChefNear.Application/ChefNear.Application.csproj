@@ -1,30 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Auth\Commands\RegisterChef\" />
-    <Folder Include="Features\Auth\DTOs\" />
-    <Folder Include="Features\Auth\Mappings\" />
-    <Folder Include="Features\Auth\Queries\" />
-    <Folder Include="Common\Behaviours\" />
-    <Folder Include="Common\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.2.0" />
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="MediatR" Version="14.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ChefNear.Domain\ChefNear.Domain.csproj" />
-    <ProjectReference Include="..\ChefNear.Shared\ChefNear.Shared.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="Features\Auth\Commands\RegisterChef\**" />
+		<EmbeddedResource Remove="Features\Auth\Commands\RegisterChef\**" />
+		<None Remove="Features\Auth\Commands\RegisterChef\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Features\Auth\Mappings\" />
+		<Folder Include="Features\Auth\Queries\" />
+		<Folder Include="Common\Behaviours\" />
+		<Folder Include="Common\Interfaces\" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="16.2.0" />
+		<PackageReference Include="FluentValidation" Version="12.1.1" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+		<PackageReference Include="MediatR" Version="14.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.11" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.10" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ChefNear.Domain\ChefNear.Domain.csproj" />
+		<ProjectReference Include="..\ChefNear.Shared\ChefNear.Shared.csproj" />
+	</ItemGroup>
 </Project>
