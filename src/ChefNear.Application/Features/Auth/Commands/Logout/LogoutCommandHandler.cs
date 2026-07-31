@@ -1,16 +1,14 @@
-﻿using ChefNear.Application.Interfaces;
-using ChefNear.Application.Responce;
+using ChefNear.Application.Interfaces;
 using ChefNear.Domain.Entities;
+using ChefNear.Domain.Errors;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.Logout
 {
-    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, AuthResponse>
+    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result<LogoutResponse>>
     {
         private readonly UserManager<User> _userManager;
         private readonly IRefreshTokenService _refreshTokenService;
@@ -26,38 +24,29 @@ namespace ChefNear.Application.Features.Auth.Commands.Logout
             _logger = logger;
         }
 
-        public async Task<AuthResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LogoutResponse>> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
-                _logger.LogWarning($"Logout failed: User not found with ID {request.UserId}");
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = "User not found"
-                };
+                _logger.LogWarning("Logout failed: User not found with ID {UserId}", request.UserId);
+                return DomainErrors.Auth.UserNotFound;
             }
 
             if (!string.IsNullOrEmpty(request.RefreshToken))
             {
                 await _refreshTokenService.RevokeRefreshTokenAsync(request.RefreshToken);
-                _logger.LogInformation($"Refresh token revoked for user {user.Email}");
+                _logger.LogInformation("Refresh token revoked for user {Email}", user.Email);
             }
 
+            _logger.LogInformation("User {Email} logged out successfully", user.Email);
 
-
-            _logger.LogInformation($"User {user.Email} logged out successfully");
-
-            return new AuthResponse
+            return Result.Success(new LogoutResponse
             {
-                Success = true,
-                Message = "Logged out successfully",
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email
-            };
+            });
         }
     }
-        }
-    
+}

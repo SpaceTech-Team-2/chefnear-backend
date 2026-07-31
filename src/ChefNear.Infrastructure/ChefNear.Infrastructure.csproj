@@ -6,17 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Identity\**" />
     <Compile Remove="Persistence\Migrations\**" />
+    <EmbeddedResource Remove="Identity\**" />
     <EmbeddedResource Remove="Persistence\Migrations\**" />
+    <None Remove="Identity\**" />
     <None Remove="Persistence\Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Identity\" />
   </ItemGroup>
 
   <ItemGroup>

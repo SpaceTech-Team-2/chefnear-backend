@@ -1,12 +1,9 @@
-﻿using ChefNear.Application.Responce;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.ResetPassword
 {
-    public class ResetPasswordCommand : IRequest<BaseCommandResponse>
+    public class ResetPasswordCommand : IRequest<Result>
     {
         public string Email { get; set; } = default!;
         public string Token { get; set; } = default!;

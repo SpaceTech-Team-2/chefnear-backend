@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
@@ -25,5 +25,11 @@
 		<ProjectReference Include="..\ChefNear.Application\ChefNear.Application.csproj" />
 		<ProjectReference Include="..\ChefNear.Infrastructure\ChefNear.Infrastructure.csproj" />
 		<ProjectReference Include="..\ChefNear.Shared\ChefNear.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="EmailTemplates\**\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>

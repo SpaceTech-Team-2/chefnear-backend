@@ -1,21 +1,17 @@
-﻿using ChefNear.Application.Features.Auth.Commands.RefreshToken;
 using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
-using ChefNear.Application.Responce;
 using ChefNear.Domain.Entities;
+using ChefNear.Domain.Errors;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
 {
-    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponse>
+    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<RefreshTokenResponse>>
     {
         private readonly IJWTService _jwtService;
         private readonly UserManager<User> _userManager;
@@ -37,7 +33,7 @@ namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
             _logger = logger;
         }
 
-        public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<Result<RefreshTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -46,11 +42,7 @@ namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
                 if (user == null)
                 {
                     _logger.LogWarning("Refresh token validation failed: Invalid or expired token");
-                    return new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Invalid or expired refresh token"
-                    };
+                    return DomainErrors.Auth.InvalidToken;
                 }
 
                 await _refreshTokenService.RevokeRefreshTokenAsync(request.RefreshToken);
@@ -63,12 +55,10 @@ namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
 
                 var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(user);
 
-                _logger.LogInformation($"Refresh token generated successfully for user {user.Email}");
+                _logger.LogInformation("Refresh token generated successfully for user {Email}", user.Email);
 
-                return new AuthResponse
+                return Result.Success(new RefreshTokenResponse
                 {
-                    Success = true,
-                    Message = "Token refreshed successfully",
                     Id = user.Id,
                     UserName = user.UserName ?? "",
                     Email = user.Email ?? "",
@@ -76,7 +66,6 @@ namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
                     Role = roleName,
                     Roles = roles.ToList(),
                     AccessToken = accessToken,
-                    Token = accessToken,
                     RefreshToken = refreshToken,
                     TokenExpiration = jwtToken.ValidTo,
                     RefreshTokenExpiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDurationInDays > 0
@@ -85,16 +74,12 @@ namespace ChefNear.Application.Features.Auth.Commands.RefreshToken
                     TokenType = "Bearer",
                     OnboardingCompleted = true,
                     CurrentStep = 0
-                };
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while refreshing token");
-                return new AuthResponse
-                {
-                    Success = false,
-                    Message = "An error occurred while refreshing token"
-                };
+                return DomainErrors.Auth.RefreshTokenFailed;
             }
         }
     }

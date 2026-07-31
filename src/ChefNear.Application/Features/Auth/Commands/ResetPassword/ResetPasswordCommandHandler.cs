@@ -1,61 +1,49 @@
-﻿using ChefNear.Application.Interfaces;
-using ChefNear.Application.Responce;
+using ChefNear.Application.Interfaces;
 using ChefNear.Domain.Entities;
+using ChefNear.Domain.Errors;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.ResetPassword
 {
-    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, BaseCommandResponse>
+    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Result>
     {
-        private readonly UserManager<User> userManager;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IRefreshTokenService refreshTokenService;
+        private readonly UserManager<User> _userManager;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-        public ResetPasswordCommandHandler(UserManager<User> userManager, ICurrentUserService currentUserService, IRefreshTokenService refreshTokenService)
+        public ResetPasswordCommandHandler(
+            UserManager<User> userManager,
+            IRefreshTokenService refreshTokenService)
         {
-            this.userManager = userManager;
-            _currentUserService = currentUserService;
-            this.refreshTokenService = refreshTokenService;
+            _userManager = userManager;
+            _refreshTokenService = refreshTokenService;
         }
 
-        public async Task<BaseCommandResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                return new BaseCommandResponse
-                {
-                    Success = true,
-                    Message = "If an account with this email exists, a reset link has been sent."
-                };
+                // Return success to prevent email enumeration
+                return Result.Success();
             }
+
             if (request.NewPassword != request.ConfirmPassword)
             {
-                return new BaseCommandResponse
-                {
-                    Success = false,
-                    Message = "Passwords do not match."
-                };
+                return Result.Failure(DomainErrors.Auth.PasswordMismatch);
             }
-            var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+
+            var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
             if (!result.Succeeded)
             {
-                return new BaseCommandResponse
-                {
-                    Success = false,
-                    Message = string.Join(", ", result.Errors.Select(x => x.Description))
-                };
+                var errors = string.Join(", ", result.Errors.Select(x => x.Description));
+                return Result.Failure(Error.Failure("Auth.ResetPasswordFailed", errors));
             }
-            await refreshTokenService.RevokeRefreshTokenAsync(user.Id.ToString());
-            return new BaseCommandResponse
-            {
-                Success = true,
-                Message = "Password reset successfully."
-            };
+
+            await _refreshTokenService.RevokeRefreshTokenAsync(user.Id.ToString());
+
+            return Result.Success();
         }
     }
 }

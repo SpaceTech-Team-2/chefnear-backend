@@ -1,12 +1,9 @@
-﻿using ChefNear.Application.Responce;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.ForgetPassword
 {
-    public class ForgetPasswordComand : IRequest<BaseCommandResponse>
+    public class ForgetPasswordComand : IRequest<Result>
     {
         public string Email { get; set; } = default!;
     }

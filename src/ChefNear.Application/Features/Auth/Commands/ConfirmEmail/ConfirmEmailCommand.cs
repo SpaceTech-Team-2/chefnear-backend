@@ -1,14 +1,11 @@
-﻿using ChefNear.Application.Responce;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.ConfirmEmail
 {
-    public class ConfirmEmailCommand : IRequest<BaseCommandResponse>
+    public class ConfirmEmailCommand : IRequest<Result>
     {
-        public string UserId { get; set; }
-        public string Token { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
     }
 }
