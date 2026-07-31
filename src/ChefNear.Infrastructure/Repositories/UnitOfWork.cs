@@ -1,36 +1,43 @@
 using System.Collections.Concurrent;
-using ChefNear.Domain.Entities;
-using ChefNear.Domain.Repositories;
+using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChefNear.Infrastructure.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly ApplicationDbContext _dbContext;
-    private readonly ConcurrentDictionary<string, object> _repositories = new();
+    private readonly ChefNearDbContext _dbContext;
     private bool _disposed;
 
-    public UnitOfWork(ApplicationDbContext dbContext)
+    private IUserRepo? userRepo;
+    private IAdressRepo? adressRepo;
+    private ICategoryRepo? categoryRepo;
+    private IDishRepo? dishRepo;
+    private IDishImageRepo? dishImageRepo;
+    private IDisputeRepo? disputeRepo;
+    private IIngredientsRepo? ingredientsRepo;
+    private INotificationRepo? notificationRepo;
+    private IOrderRepo? orderRepo;
+    private IReviewRepo? reviewRepo;
+    private IPaymentRepo? paymentRepo;
+
+    public UnitOfWork(ChefNearDbContext dbContext)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _dbContext = dbContext;
     }
 
-    public IGenericRepository<TEntity, TId> Repository<TEntity, TId>() where TEntity : BaseEntity<TId>
-    {
-        var typeName = typeof(TEntity).Name + "_" + typeof(TId).Name;
-
-        return (IGenericRepository<TEntity, TId>)_repositories.GetOrAdd(typeName, _ =>
-            new GenericRepository<TEntity, TId>(_dbContext));
-    }
-
-    public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity<int>
-    {
-        var typeName = typeof(TEntity).Name + "_Int32";
-
-        return (IGenericRepository<TEntity>)_repositories.GetOrAdd(typeName, _ =>
-            new GenericRepository<TEntity>(_dbContext));
-    }
+    public IUserRepo Users => userRepo ??= new UserRepo(_dbContext);
+    public IAdressRepo adresses => adressRepo ??= new AddressRepo(_dbContext);
+    public ICategoryRepo categories => categoryRepo ??= new CategoryRepo(_dbContext);
+    public IDishRepo dishes => dishRepo ??= new DishRepo(_dbContext);
+    public IDishImageRepo dishImages => dishImageRepo ??= new DishImageRepo(_dbContext);
+    public IDisputeRepo disputes => disputeRepo ??= new DisputeRepo(_dbContext);
+    public IIngredientsRepo ingredients => ingredientsRepo ??= new IngredentsRepo(_dbContext);
+    public INotificationRepo notifications => notificationRepo ??= new NotificationRepo(_dbContext);
+    public IOrderRepo Orders => orderRepo ??= new OrderRepo(_dbContext);
+    public IReviewRepo Reviews => reviewRepo ??= new ReviewRepo(_dbContext);
+    public IPaymentRepo Payments => paymentRepo ??= new PaymentRepo(_dbContext);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -51,7 +58,6 @@ public class UnitOfWork : IUnitOfWork
             {
                 _dbContext.Dispose();
             }
-
             _disposed = true;
         }
     }
