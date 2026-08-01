@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChefNear.Application.Features.Auth.Commands.changePassword
+namespace ChefNear.Application.Features.Auth.Commands.ChangePassword
 {
     public class ChangePasswordComand : IRequest<AuthResponse>
     {

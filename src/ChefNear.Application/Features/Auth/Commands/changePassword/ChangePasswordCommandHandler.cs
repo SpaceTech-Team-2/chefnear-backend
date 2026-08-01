@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ChefNear.Application.Features.Auth.Commands.ChangePassword
 {
-    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComand, AuthResponse>
+    public class ChangePasswordCommandHandler : IRequestHandler<ChangePassword.ChangePasswordComand, AuthResponse>
     {
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserService _currentUserService;

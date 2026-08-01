@@ -72,7 +72,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
 
             if (request.Address != null)
             {
-                var address = new Address
+                var address = new Domain.Entities.Address
                 {
                     Id = Guid.NewGuid(),
                     UserId = user.Id,              
