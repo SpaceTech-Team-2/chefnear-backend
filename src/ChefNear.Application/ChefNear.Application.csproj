@@ -21,12 +21,15 @@
 		<PackageReference Include="AutoMapper" Version="16.2.0" />
 		<PackageReference Include="FluentValidation" Version="12.1.1" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-		<PackageReference Include="Hangfire.Core" Version="1.8.14" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.24" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.24" />
 		<PackageReference Include="MediatR" Version="14.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.11" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.10" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ChefNear.Domain\ChefNear.Domain.csproj" />
