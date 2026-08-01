@@ -3,6 +3,7 @@ using ChefNear.API;
 using ChefNear.API.Extensions;
 using ChefNear.API.Middlewares;
 using ChefNear.Application;
+using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
 using ChefNear.Infrastructure;
 using ChefNear.Infrastructure.Persistence;
@@ -67,6 +68,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    await dbInitializer.InitializeAsync();
+
     await SeedData.SeedAsync(scope.ServiceProvider);
 }
 

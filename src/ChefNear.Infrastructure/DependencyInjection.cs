@@ -53,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IJWTService, JWTService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDbInitializer, DbInitializer>();
 
         return services;
     }
