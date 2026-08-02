@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using ChefNear.API.Controllers;
 using ChefNear.Application.Features.Auth.Commands.changePassword;
+using ChefNear.Application.Features.Auth.Commands.ChangePassword;
 using ChefNear.Application.Features.Auth.Commands.ConfirmEmail;
 using ChefNear.Application.Features.Auth.Commands.ForgetPassword;
 using ChefNear.Application.Features.Auth.Commands.Login;

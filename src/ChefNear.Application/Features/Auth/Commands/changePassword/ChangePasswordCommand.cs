@@ -1,7 +1,8 @@
+using ChefNear.Application.Features.Auth.Commands.changePassword;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 
-namespace ChefNear.Application.Features.Auth.Commands.changePassword
+namespace ChefNear.Application.Features.Auth.Commands.ChangePassword
 {
     public class ChangePasswordComand : IRequest<Result<ChangePasswordResponse>>
     {
