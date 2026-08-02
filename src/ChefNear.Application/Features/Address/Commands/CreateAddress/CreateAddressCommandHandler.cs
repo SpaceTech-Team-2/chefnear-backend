@@ -50,6 +50,6 @@ public class CreateAddressCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return address.Id;
+        return Result<Guid>.Success(address.Id);
     }
 }

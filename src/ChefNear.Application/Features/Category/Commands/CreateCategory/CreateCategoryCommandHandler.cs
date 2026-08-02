@@ -1,5 +1,4 @@
 ﻿using ChefNear.Application.Common.Persistence.Interfaces;
-using ChefNear.Domain.Entities;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 
@@ -15,7 +14,9 @@ public class CreateCategoryCommandHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(
+        CreateCategoryCommand request,
+        CancellationToken cancellationToken)
     {
         var categories = await _unitOfWork.categories.GetAllAsync();
 
@@ -24,9 +25,9 @@ public class CreateCategoryCommandHandler
         if (categoryExists)
         {
             return Error.Conflict(
-                "Category.Exists",
-                "A category with this name already exists."
-            );
+      "Category.Exists",
+      "A category with this name already exists."
+  );
         }
 
         var category = new Domain.Entities.Category
@@ -39,6 +40,6 @@ public class CreateCategoryCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return category.Id;
+        return Result<Guid>.Success(category.Id);
     }
 }

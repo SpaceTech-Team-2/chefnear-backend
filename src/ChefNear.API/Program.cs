@@ -3,10 +3,12 @@ using ChefNear.API;
 using ChefNear.API.Extensions;
 using ChefNear.API.Middlewares;
 using ChefNear.Application;
+using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
 using ChefNear.Infrastructure;
 using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Seed;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -24,6 +26,17 @@ builder.Services.AddControllers()
 var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Configure email template path
+builder.Services.Configure<EmailTemplateSettings>(options =>
+{
+    options.TemplatePath = Path.Combine(builder.Environment.ContentRootPath, "EmailTemplates");
+});
+
+// Hangfire
+builder.Services.AddHangfire(config =>
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
 
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 builder.Services.AddAuthentication(options =>
@@ -55,6 +68,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    await dbInitializer.InitializeAsync();
+
     await SeedData.SeedAsync(scope.ServiceProvider);
 }
 
@@ -82,6 +98,10 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();  
 app.UseAuthorization();
+
+// Hangfire Dashboard — available in all environments
+app.UseHangfireDashboard("/hangfire");
+
 app.MapControllers();
 
 app.Run();

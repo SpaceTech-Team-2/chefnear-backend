@@ -1,48 +1,44 @@
-﻿using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Interfaces;
-using ChefNear.Application.Responce;
 using ChefNear.Domain.Entities;
+using ChefNear.Domain.Errors;
+using ChefNear.Shared.ResultPattern;
+using Hangfire;
 using HomeChefMarketplace.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ChefNear.Application.Features.Auth.Commands.Register
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResponse>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
     {
         private readonly UserManager<User> _userManager;
-        private readonly IEmailService _emailService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<RegisterCommandHandler> _logger;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
         public RegisterCommandHandler(
             UserManager<User> userManager,
-            IEmailService emailService,
             ILogger<RegisterCommandHandler> logger,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IBackgroundJobClient backgroundJobClient)
         {
             _userManager = userManager;
-            _emailService = emailService;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _backgroundJobClient = backgroundJobClient;
         }
 
-
-        public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             if (request.Password != request.ConfirmPassword)
-                return new AuthResponse { Success = false, Message = "Passwords do not match" };
+                return DomainErrors.Auth.PasswordMismatch;
 
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
-                return new AuthResponse { Success = false, Message = "Email already exists" };
+                return DomainErrors.Auth.EmailAlreadyExists;
 
-            // ✅ 1. اعمل الـ User الأول من غير KitchenAddressId (سيبه null مؤقتاً)
             var user = new User
             {
                 Id = Guid.NewGuid().ToString(),
@@ -54,7 +50,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 Description = request.Description,
                 Role = request.Role,
                 Status = UserStatus.Active,
-                KitchenAddressId = null   
+                KitchenAddressId = null
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -62,8 +58,8 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                _logger.LogWarning($"Registration failed for {request.Email}: {errors}");
-                return new AuthResponse { Success = false, Message = errors };
+                _logger.LogWarning("Registration failed for {Email}: {Errors}", request.Email, errors);
+                return Error.Failure("Auth.RegistrationFailed", errors);
             }
 
             var roleName = request.Role.ToString();
@@ -75,7 +71,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 var address = new Domain.Entities.Address
                 {
                     Id = Guid.NewGuid(),
-                    UserId = user.Id,              
+                    UserId = user.Id,
                     Label = request.Address.Label,
                     City = request.Address.City,
                     Details = request.Address.Details,
@@ -91,26 +87,26 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 if (request.Role == UserRole.Chef)
                 {
                     user.KitchenAddressId = address.Id;
-                    await _userManager.UpdateAsync(user);   
+                    await _userManager.UpdateAsync(user);
                 }
             }
 
+            // Enqueue confirmation email as a background job
             try
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                await _emailService.SendConfirmationEmailAsync(user.Email ?? "", user.Id, token);
+                _backgroundJobClient.Enqueue<IEmailService>(
+                    svc => svc.SendConfirmationEmailAsync(user.Email ?? "", user.Id, token));
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, $"Failed to send confirmation email to {request.Email}");
+                _logger.LogWarning(ex, "Failed to enqueue confirmation email for {Email}", request.Email);
             }
 
-            _logger.LogInformation($"User {request.Email} registered successfully with role {roleName}");
+            _logger.LogInformation("User {Email} registered successfully with role {Role}", request.Email, roleName);
 
-            return new AuthResponse
+            return Result.Success(new RegisterResponse
             {
-                Success = true,
-                Message = "Registration successful. Please check your email to confirm your account.",
                 Id = user.Id,
                 UserName = user.UserName ?? "",
                 Email = user.Email ?? "",
@@ -118,8 +114,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 PhoneNumber = user.PhoneNumber,
                 Role = roleName,
                 Roles = new List<string> { roleName },
-                OnboardingCompleted = false,
-            };
+            });
         }
     }
 }

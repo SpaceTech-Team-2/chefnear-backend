@@ -49,11 +49,11 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepo, OrderRepo>();
         services.AddScoped<IPaymentRepo, PaymentRepo>();
         services.AddScoped<IReviewRepo, ReviewRepo>();
-        services.AddScoped<IUserRepo, UserRepo>();
-            services.AddScoped<IEmailService, EmailService>();
+        services.AddTransient<IEmailService, EmailService>();
         services.AddScoped<IJWTService, JWTService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IDbInitializer, DbInitializer>();
 
         return services;
     }

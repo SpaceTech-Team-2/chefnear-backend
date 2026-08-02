@@ -1,55 +1,50 @@
-﻿using ChefNear.Application.Features.Auth.Commands.ForgetPassword;
 using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
-using ChefNear.Application.Responce;
+using ChefNear.Shared.ResultPattern;
 using ChefNear.Domain.Entities;
+using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-public class ForgetPasswordCommandHandler : IRequestHandler<ForgetPasswordComand, BaseCommandResponse>
+namespace ChefNear.Application.Features.Auth.Commands.ForgetPassword
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IEmailService _emailService;
-    private readonly AppUrlSettings _appUrlSettings;
-
-    public ForgetPasswordCommandHandler(
-        UserManager<User> userManager,
-        IEmailService emailService,
-        IOptions<AppUrlSettings> appUrlSettings)
+    public class ForgetPasswordCommandHandler : IRequestHandler<ForgetPasswordComand, Result>
     {
-        _userManager = userManager;
-        _emailService = emailService;
-        _appUrlSettings = appUrlSettings.Value;
-    }
+        private readonly UserManager<User> _userManager;
+        private readonly AppUrlSettings _appUrlSettings;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public async Task<BaseCommandResponse> Handle(ForgetPasswordComand request, CancellationToken cancellationToken)
-    {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
+        public ForgetPasswordCommandHandler(
+            UserManager<User> userManager,
+            IOptions<AppUrlSettings> appUrlSettings,
+            IBackgroundJobClient backgroundJobClient)
         {
-            return new BaseCommandResponse
-            {
-                Success = true,
-                Message = "If an account exists, a reset link has been sent."
-            };
+            _userManager = userManager;
+            _appUrlSettings = appUrlSettings.Value;
+            _backgroundJobClient = backgroundJobClient;
         }
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var encodedToken = Uri.EscapeDataString(token);
-        var encodedEmail = Uri.EscapeDataString(user.Email!);
-
-        var resetLink = $"{_appUrlSettings.FrontendBaseUrl}/{_appUrlSettings.ResetPasswordPath}?email={encodedEmail}&token={encodedToken}";
-
-        await _emailService.SendEmailAsync(
-            user.Email!,
-            "Reset Password - ChefNear",
-            $"Click here to reset your password: {resetLink}");
-
-        return new BaseCommandResponse
+        public async Task<Result> Handle(ForgetPasswordComand request, CancellationToken cancellationToken)
         {
-            Success = true,
-            Message = "If an account exists, a reset link has been sent."
-        };
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                // Return success even if user not found to prevent email enumeration
+                return Result.Success();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Uri.EscapeDataString(token);
+            var encodedEmail = Uri.EscapeDataString(user.Email!);
+
+            var resetLink = $"{_appUrlSettings.FrontendBaseUrl}/{_appUrlSettings.ResetPasswordPath}?email={encodedEmail}&token={encodedToken}";
+
+            // Enqueue reset password email as a background job
+            _backgroundJobClient.Enqueue<IEmailService>(
+                svc => svc.SendResetPasswordEmailAsync(user.Email!, resetLink));
+
+            return Result.Success();
+        }
     }
 }
