@@ -49,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepo, OrderRepo>();
         services.AddScoped<IPaymentRepo, PaymentRepo>();
         services.AddScoped<IReviewRepo, ReviewRepo>();
+        services.AddScoped<IFileStorageService, CloudinaryFileStorageService>();
         services.AddTransient<IEmailService, EmailService>();
         services.AddScoped<IJWTService, JWTService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
