@@ -17,7 +17,6 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IBackgroundJobClient _backgroundJobClient;
-
         public RegisterCommandHandler(
             UserManager<User> userManager,
             ILogger<RegisterCommandHandler> logger,
@@ -38,7 +37,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
                 return DomainErrors.Auth.EmailAlreadyExists;
-
+           
             var user = new User
             {
                 Id = Guid.NewGuid().ToString(),
@@ -46,7 +45,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 Email = request.Email,
                 DisplayName = request.DisplayName ?? request.Email.Split('@')[0],
                 PhoneNumber = request.PhoneNumber,
-                PhotoUrl = request.PhotoUrl,
+                PhotoUrl = null,
                 Description = request.Description,
                 Role = request.Role,
                 Status = UserStatus.Active,

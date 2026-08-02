@@ -40,7 +40,7 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Resul
 
         for (int i = 0; i < request.ImageUrls.Count; i++)
         {
-            dish.Images.Add(new DishImage
+            dish.Images.Add(new Domain.Entities.DishImage
             {
                 ImageUrl = request.ImageUrls[i],
                 IsPrimary = i == 0,
