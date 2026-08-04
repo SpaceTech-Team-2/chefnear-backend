@@ -23,7 +23,6 @@ namespace ChefNear.API.Controller
         public async Task<IActionResult> GetAll()
         {
             var result = await _mediator.Send(new GetCategoriesQuery());
-
             return Ok(result);
         }
 
@@ -32,10 +31,8 @@ namespace ChefNear.API.Controller
         public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command)
         {
             var result = await _mediator.Send(command);
-
             if (result.IsFailure)
-                return BadRequest(result.Error.Description);
-
+                return BadRequest(result.Error);
             return Ok(result.Value);
         }
 
@@ -47,11 +44,9 @@ namespace ChefNear.API.Controller
                 return BadRequest("Route categoryId does not match request body.");
 
             var result = await _mediator.Send(command);
-
             if (result.IsFailure)
-                return BadRequest(result.Error.Description);
-
-            return Ok();
+                return BadRequest(result.Error);
+            return Ok(new { message = "Category updated successfully." });
         }
 
         [Authorize(Roles = "Admin")]
@@ -64,11 +59,9 @@ namespace ChefNear.API.Controller
             };
 
             var result = await _mediator.Send(command);
-
             if (result.IsFailure)
-                return BadRequest(result.Error.Description);
-
-            return Ok();
+                return BadRequest(result.Error);
+            return Ok(new { message = "Category deleted successfully." });
         }
     }
 }

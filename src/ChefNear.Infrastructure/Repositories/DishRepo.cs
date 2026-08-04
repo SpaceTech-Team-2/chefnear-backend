@@ -23,6 +23,15 @@ public class DishRepo : GenericRepository<Dish>, IDishRepo
             .Where(d => !d.IsDeleted)
             .ToListAsync();
     }
+    public async Task<Domain.Entities.Dish?> GetByIdWithDetailsAsync(Guid id)
+    {
+        return await _context.Dishes
+            .Include(d => d.Category)
+            .Include(d => d.Chef)
+            .Include(d => d.Images)
+            .Include(d => d.Ingredients)
+            .FirstOrDefaultAsync(d => d.Id == id);
+    }
     public async Task<Dish?> GetDishDetailsAsync(Guid id)
     {
         return await _context.Dishes

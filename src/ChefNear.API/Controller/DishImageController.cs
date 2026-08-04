@@ -35,14 +35,18 @@ public class DishImageController : ControllerBase
 
     [Authorize(Roles = "Chef")]
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] AddDishImageCommand command)
+    public async Task<IActionResult> Add([FromForm] AddDishImageCommand command)
     {
         var result = await _mediator.Send(command);
 
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok(result.Value);
+        return Ok(new
+        {
+            message = "Dish image added successfully.",
+            data = result.Value
+        });
     }
 
     [Authorize(Roles = "Chef")]
@@ -54,7 +58,10 @@ public class DishImageController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok();
+        return Ok(new
+        {
+            message = "Primary image updated successfully."
+        });
     }
 
     [Authorize(Roles = "Chef")]
@@ -72,6 +79,9 @@ public class DishImageController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok();
+        return Ok(new
+        {
+            message = "Dish image deleted successfully."
+        });
     }
 }

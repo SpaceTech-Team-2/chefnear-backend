@@ -26,14 +26,14 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+    public async Task<IActionResult> Register(RegisterCommand command)
     {
-        var response = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        if (response.IsFailure)
-            return BadRequest(response);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-        return Ok(response);
+        return Ok(result.Value);
     }
 
 
@@ -43,11 +43,12 @@ public class AuthController : ControllerBase
         var response = await _mediator.Send(command);
 
         if (response.IsFailure)
-            return Unauthorized(response);
+        {
+            return Unauthorized(response.Error);
+        }
 
-        return Ok(response);
+        return Ok(response.Value);
     }
-
 
     [Authorize]
     [HttpPost("logout")]

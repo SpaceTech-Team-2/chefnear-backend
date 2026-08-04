@@ -18,8 +18,7 @@ public class CreateAddressCommandHandler
 
     public async Task<Result<Guid>> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
-
+        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId.ToString());
         if (user == null)
         {
             return Error.NotFound("User.NotFound", "User not found.");

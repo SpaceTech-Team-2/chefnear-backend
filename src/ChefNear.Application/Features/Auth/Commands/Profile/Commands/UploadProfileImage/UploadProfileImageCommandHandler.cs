@@ -3,7 +3,7 @@ using ChefNear.Application.Interfaces;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 
-namespace ChefNear.Application.Features.Auth.Commands.Profile.UploadProfileImage;
+namespace ChefNear.Application.Features.Auth.Commands.Profile.Commands.UploadProfileImage;
 
 public class UploadProfileImageCommandHandler
     : IRequestHandler<UploadProfileImageCommand, Result>
@@ -23,8 +23,7 @@ public class UploadProfileImageCommandHandler
         UploadProfileImageCommand request,
         CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
-
+        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId.ToString());
         if (user == null)
         {
             return Result.Failure(

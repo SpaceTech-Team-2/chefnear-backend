@@ -55,6 +55,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDbInitializer, DbInitializer>();
+        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));   
 
         return services;
     }

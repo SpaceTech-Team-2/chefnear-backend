@@ -1,5 +1,7 @@
-﻿using ChefNear.Application.Features.Addresses.Commands;
+﻿using ChefNear.Application.Features.Address.Queries.GetAddressById;
+using ChefNear.Application.Features.Addresses.Commands;
 using ChefNear.Application.Features.Addresses.Queries;
+using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Application.Features.Addresses.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +15,7 @@ namespace ChefNear.API.Controller;
 public class AddressesController : ControllerBase
 {
     private readonly IMediator _mediator;
-        
+
     public AddressesController(IMediator mediator)
     {
         _mediator = mediator;
@@ -38,7 +40,11 @@ public class AddressesController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error.Description);
 
-        return Ok(result.Value);
+        return Ok(new
+        {
+            message = "Address created successfully.",
+            addressId = result.Value
+        });
     }
 
     [HttpPut("{addressId:guid}")]
@@ -52,7 +58,7 @@ public class AddressesController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error.Description);
 
-        return Ok();
+        return Ok(new { message = "Address Updated successfully." });
     }
 
     [HttpDelete("{addressId:guid}")]
@@ -69,6 +75,16 @@ public class AddressesController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error.Description);
 
-        return Ok();
+        return Ok(new { message = "Address Updated successfully." });
     }
+    [HttpGet("{addressId:guid}")]
+    public async Task<IActionResult> GetById(Guid addressId)
+    {
+        var res = await _mediator.Send(new GetAddressByIdQuery { AddressId = addressId });
+        if (res.IsFailure)
+            return NotFound(res.Error);
+
+        return Ok(res.Value);
+    }
+
 }
