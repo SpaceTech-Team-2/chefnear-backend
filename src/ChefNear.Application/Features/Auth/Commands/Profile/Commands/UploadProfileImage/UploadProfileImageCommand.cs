@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChefNear.Application.Features.Auth.Commands.Profile.UploadProfileImage
+namespace ChefNear.Application.Features.Auth.Commands.Profile.Commands.UploadProfileImage
 {
    public class UploadProfileImageCommand : IRequest<Result>
     {

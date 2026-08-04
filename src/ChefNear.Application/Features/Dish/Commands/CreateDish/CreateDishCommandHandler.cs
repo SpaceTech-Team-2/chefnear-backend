@@ -17,7 +17,7 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Resul
 
     public async Task<Result<Guid>> Handle(CreateDishCommand request, CancellationToken cancellationToken)
     {
-        var chef = await _unitOfWork.Users.GetByIdAsync(request.ChefId);
+        var chef = await _unitOfWork.Users.GetByIdAsync(request.ChefId.ToString());
 
         if (chef == null || chef.Role != UserRole.Chef)
         {

@@ -21,7 +21,7 @@ namespace ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery
             GetDishByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var dish = await _unitOfWork.dishes.GetByIdAsync(request.DishId);
+            var dish = await _unitOfWork.dishes.GetByIdWithDetailsAsync(request.DishId);
 
             if (dish == null || dish.IsDeleted)
                 return null;

@@ -1,12 +1,10 @@
-﻿
-using ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery;
+﻿using ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery;
 using ChefNear.Application.Features.Dishes.Commands;
 using ChefNear.Application.Features.Dishes.Queries.GetNearbyDishesQuery;
-using ChefNear.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Security.Claims;
 
 namespace ChefNear.API.Controllers;
 
@@ -32,47 +30,44 @@ public class DishesController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _mediator.Send(new GetDishByIdQuery { DishId = id });
-
         if (result == null)
-            return NotFound();
+            return NotFound(new { message = "Dish not found." });
 
         return Ok(result);
     }
 
     [Authorize(Roles = "Chef")]
-
     [HttpPost]
-    public async Task<IActionResult> Create(Application.Features.Dishes.Commands.CreateDishCommand command)
+    public async Task<IActionResult> Create(CreateDishCommand command)
     {
         var result = await _mediator.Send(command);
-
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok(result.Value);
+        return Ok(new { message = "Dish created successfully.", dishId = result.Value });
     }
-    [Authorize(Roles = "Chef")]
 
+    [Authorize(Roles = "Chef")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateDishCommand command)
     {
         if (id != command.DishId)
-            return BadRequest();
-        var result = await _mediator.Send(command);
+            return BadRequest(new { message = "Route id does not match request body." });
 
+        var result = await _mediator.Send(command);
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok();
+        return Ok(new { message = "Dish updated successfully." });
     }
+
     [Authorize(Roles = "Chef")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var chefId = User.FindFirst("UserId")?.Value;
-
+        var chefId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (chefId == null)
-            return Unauthorized();
+            return Unauthorized(new { message = "Chef id claim is missing." });
 
         var result = await _mediator.Send(new DeleteDishCommand
         {
@@ -83,6 +78,6 @@ public class DishesController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return Ok();
+        return Ok(new { message = "Dish deleted successfully." });
     }
 }

@@ -18,7 +18,7 @@ public class RegisterCommand : IRequest<Result<RegisterResponse>>
 
     public string? PhoneNumber { get; set; }
 
-    public IFormFile? Photo { get; set; }
+   // public IFormFile? Photo { get; set; }
 
     public string? Description { get; set; }
 

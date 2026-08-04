@@ -12,9 +12,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
             RuleFor(x => x.ChefId)
                 .NotEmpty();
 
-            RuleFor(x => x.ImageUrl)
-                .NotEmpty()
-                .MaximumLength(500);
+          
         }
     }
 }

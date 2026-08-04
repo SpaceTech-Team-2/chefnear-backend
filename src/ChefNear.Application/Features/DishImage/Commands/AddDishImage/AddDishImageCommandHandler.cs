@@ -19,36 +19,38 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
             _fileStorageService = fileStorageService;
         }
 
-        public async Task<Result<Guid>> Handle(AddDishImageCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(
+            AddDishImageCommand request,
+            CancellationToken cancellationToken)
         {
             var dish = await _unitOfWork.dishes.GetByIdAsync(request.DishId);
 
             if (dish == null || dish.IsDeleted)
             {
-                return Error.NotFound(
-                    "Dish.NotFound",
-                    "Dish not found.");
+                return Result.Failure<Guid>(
+                    Error.NotFound("Dish.NotFound", "Dish not found."));
             }
 
             if (dish.ChefId != request.ChefId)
             {
-                return Error.Forbidden(
-                    "Dish.NotOwner",
-                    "Only the owner can add images to this dish.");
+                return Result.Failure<Guid>(
+                    Error.Forbidden("Dish.NotOwner", "Only the owner can add images to this dish."));
             }
 
-            await using var stream = new MemoryStream(request.FileBytes);
+            await using var stream = request.File.OpenReadStream();
 
             var imageUrl = await _fileStorageService.UploadImageAsync(
                 stream,
-                request.FileName,
+                request.File.FileName,
                 cancellationToken);
+
 
             var images = await _unitOfWork.dishImages.GetAllAsync();
 
             if (request.IsPrimary)
             {
-                foreach (var img in images.Where(i => i.DishId == request.DishId && i.IsPrimary))
+                foreach (var img in images.Where(i =>
+                    i.DishId == request.DishId && i.IsPrimary))
                 {
                     img.IsPrimary = false;
                 }
