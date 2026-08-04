@@ -28,6 +28,10 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterCommand command)
     {
+        if(!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         var result = await _mediator.Send(command);
 
         if (result.IsFailure)
