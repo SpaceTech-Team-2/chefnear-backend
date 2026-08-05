@@ -1,7 +1,9 @@
+using ChefNear.Application.Model;
 using ChefNear.Shared.Responses;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ChefNear.API.Controllers;
 
@@ -11,6 +13,28 @@ public abstract class BaseApiController : ControllerBase
 {
     private IMediator? _mediator;
     protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<IMediator>();
+    protected CurrentUser GetUser()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        var firstName = User.FindFirst("FName")?.Value;
+        var lastName = User.FindFirst("LName")?.Value;
+        var phoneNumber = User.FindFirst("PhoneNumber")?.Value;
+
+        if (userId == null || email == null || role == null || firstName == null || lastName == null || phoneNumber == null)
+            throw new UnauthorizedAccessException("User information is incomplete or missing.");
+
+        return new CurrentUser
+        {
+            Id = userId,
+            Email = email,
+            Role = role,
+            FirstName = firstName,
+            LastName = lastName,
+            PhoneNumber = phoneNumber
+        };
+    }
 
     /// <summary>
     /// Converts a non-generic Result into an appropriate HTTP response wrapped in ApiResponse.

@@ -1,4 +1,4 @@
-﻿namespace HomeChefMarketplace.Domain.Enums;
+namespace HomeChefMarketplace.Domain.Enums;
 
 public enum UserRole
 {
@@ -28,7 +28,8 @@ public enum OrderStatus
     Preparing = 3,
     ReadyForDelivery = 4,
     Delivered = 5,
-    Cancelled = 6
+    Cancelled = 6,
+    Confirmed = 7
 }
 
 public enum CancelledBy
@@ -44,7 +45,8 @@ public enum PaymentStatus
     Pending = 1,
     Held = 2,
     Released = 3,
-    Refunded = 4
+    Refunded = 4,
+    Failed = 5
 }
 
 public enum DisputeType

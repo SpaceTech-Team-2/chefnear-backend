@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ChefNear.Application.Common.Persistence.Interfaces;
-using ChefNear.Domain.Common;
 using ChefNear.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChefNear.Infrastructure.Repositories;
 
@@ -52,5 +50,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         _dbContext.Set<T>().Remove(entity);
         return Task.CompletedTask;
+    }
+
+    public async Task<T> FindFirstAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
     }
 }

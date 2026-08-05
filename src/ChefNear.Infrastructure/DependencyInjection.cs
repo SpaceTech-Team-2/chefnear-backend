@@ -1,10 +1,15 @@
+using ChefNear.Application.Common.Payments;
+using ChefNear.Application.Common.Payments.Paymob;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
 using ChefNear.Domain.Entities;
+using ChefNear.Infrastructure.Payments;
+using ChefNear.Infrastructure.Payments.PaymentGateways;
 using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Repositories;
 using ChefNear.Infrastructure.Services;
+using ChefNear.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,10 +27,11 @@ public static class DependencyInjection
 
         services.AddDbContext<ChefNearDbContext>(options =>
             options.UseSqlServer(connectionString));
+
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-
         services.Configure<AppUrlSettings>(configuration.GetSection("AppUrlSettings"));
-
+        services.Configure<PaymobSettings>(configuration.GetSection("PaymentGateway:Paymob"));
+        services.Configure<FrontendSettings>(configuration.GetSection("FrontendSettings"));
 
         services.AddIdentity<User, IdentityRole>(options =>
         {
@@ -54,6 +60,8 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDbInitializer, DbInitializer>();
+        services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
+        services.AddScoped<IPaymobService, PaymobService>();
 
         return services;
     }

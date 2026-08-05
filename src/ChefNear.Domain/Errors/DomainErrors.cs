@@ -42,4 +42,43 @@ public static class DomainErrors
         public static readonly Error RefreshTokenFailed =
             Error.Failure("Auth.RefreshTokenFailed", "An error occurred while refreshing token.");
     }
+
+    public static class Payment
+    {
+        public static readonly Error IdempotencyKeyAlreadyExists =
+            Error.Conflict("Payment.IdempotencyKeyAlreadyExists", "A payment with the same idempotency key already exists.");
+
+        public static readonly Error PaymentNotFound =
+            Error.NotFound("Payment.PaymentNotFound", "Payment not found.");
+
+        public static readonly Error PaymentAlreadyProcessed =
+            Error.Validation("Payment.PaymentAlreadyProcessed", "Payment has already been processed.");
+    }
+
+    public static class Dish
+    {
+        public static readonly Error DishNotFound =
+            Error.NotFound("Dish.DishNotFound", "Dish not found.");
+
+        public static readonly Error DishUnavailable =
+            Error.Validation("Dish.DishUnavailable", "Dish is currently unavailable.");
+    }
+
+    public static class Address
+    {
+        public static readonly Error AddressNotFound =
+            Error.NotFound("Address.AddressNotFound", "Address not found.");
+    }
+
+    public static class Order
+    {
+        public static readonly Error OrderNotFound =
+            Error.NotFound("Order.OrderNotFound", "Order not found.");
+        public static readonly Error OrderAlreadyProcessed =
+            Error.Validation("Order.OrderAlreadyProcessed", "Order has already been processed.");
+        public static readonly Error InvalidOrderStatus =
+            Error.Validation("Order.InvalidOrderStatus", "Invalid order status for this operation.");
+        public static readonly Error DeliveryAddressNotProvided =
+            Error.Validation("Order.DeliveryAddressNotProvided", "Delivery address is required.");
+    }
 }

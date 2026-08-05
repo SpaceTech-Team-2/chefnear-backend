@@ -26,12 +26,13 @@ namespace ChefNear.Infrastructure.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("display_name", user.DisplayName ?? user.Email ?? user.Id),
-                new Claim("user_role", user.Role.ToString())
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim("FName", user.FirstName),
+                new Claim("LName", user.LastName),
+                new Claim("PhoneNumber", user.PhoneNumber)
             };
 
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));

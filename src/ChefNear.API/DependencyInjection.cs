@@ -22,6 +22,7 @@ public static class DependencyInjection
             options.SubstituteApiVersionInUrl = true;
         });
 
+        services.AddHttpClient();
 
         services.AddCors(options =>
         {

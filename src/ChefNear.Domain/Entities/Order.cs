@@ -1,5 +1,6 @@
 ﻿using ChefNear.Domain.Common;
 using HomeChefMarketplace.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace ChefNear.Domain.Entities
 {
-    public class Order : BaseEntity
+    public class Order : BaseEntity , ISoftDelete
     {
         public string ClientId { get; set; } = string.Empty; 
         public User Client { get; set; } = null!;
@@ -21,7 +22,6 @@ namespace ChefNear.Domain.Entities
         public int Quantity { get; set; }
         public string? Notes { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-
   
         public CancelledBy? CancelledBy { get; set; }
         public string? CancellationReason { get; set; }
@@ -30,5 +30,7 @@ namespace ChefNear.Domain.Entities
         public Review? Review { get; set; }
         public Dispute? Dispute { get; set; }
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

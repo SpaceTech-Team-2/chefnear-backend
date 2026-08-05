@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,6 +12,8 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
             builder.ToTable("Orders");
 
             builder.HasKey(o => o.Id);
+
+
 
             builder.Property(o => o.Quantity)
                 .HasDefaultValue(1)

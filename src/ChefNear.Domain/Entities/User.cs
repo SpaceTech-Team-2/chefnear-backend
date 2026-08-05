@@ -15,6 +15,8 @@ namespace ChefNear.Domain.Entities
 
         public Guid? KitchenAddressId { get; set; }
         public Address? KitchenAddress { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string? DisplayName { get; set; }
         public string? PhotoUrl { get; set; }
         public string? Description { get; set; }

@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -42,7 +42,11 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .IsUnique();
 
             builder.HasIndex(p => p.Status);
+
             builder.HasIndex(p => p.GatewayTransactionId)
+                .IsUnique();
+
+            builder.HasIndex(p => p.IdempotencyKey)
                 .IsUnique();
         }
     }

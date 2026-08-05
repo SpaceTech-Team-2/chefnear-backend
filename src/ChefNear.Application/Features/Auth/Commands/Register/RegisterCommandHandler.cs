@@ -44,10 +44,11 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 Id = Guid.NewGuid().ToString(),
                 UserName = request.Email,
                 Email = request.Email,
-                DisplayName = request.DisplayName ?? request.Email.Split('@')[0],
                 PhoneNumber = request.PhoneNumber,
                 PhotoUrl = request.PhotoUrl,
                 Description = request.Description,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 Role = request.Role,
                 Status = UserStatus.Active,
                 KitchenAddressId = null
@@ -81,7 +82,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                     CreatedAt = DateTime.UtcNow,
                 };
 
-                await _unitOfWork.adresses.AddAsync(address);
+                await _unitOfWork.Adresses.AddAsync(address);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (request.Role == UserRole.Chef)
