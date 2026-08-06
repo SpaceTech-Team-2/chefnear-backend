@@ -14,10 +14,10 @@ public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
         RuleFor(x => x.ReasonType)
             .IsInEnum().WithMessage("Invalid cancellation reason type.");
 
-        RuleFor(x => x.CustomComment)
+        RuleFor(x => x.ReasonFreeText)
             .MaximumLength(500).WithMessage("Custom comment cannot exceed 500 characters.");
 
-        RuleFor(x => x.CustomComment)
+        RuleFor(x => x.ReasonFreeText)
             .NotEmpty()
             .When(x => x.ReasonType == CancellationReasonType.ClientOther || x.ReasonType == CancellationReasonType.ChefOther)
             .WithMessage("Custom comment is required when reason is set to Other.");

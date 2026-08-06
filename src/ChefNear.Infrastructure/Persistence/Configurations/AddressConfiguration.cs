@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ChefNear.Domain.Entities;
 
@@ -36,9 +36,9 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasDefaultValue(false);
 
             
-            builder.HasOne(a => a.User)
-                .WithMany(u => u.Addresses)
-                .HasForeignKey(a => a.UserId)
+            builder.HasOne(a => a.Client)
+                .WithMany(c => c.Addresses)
+                .HasForeignKey(a => a.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(a => a.Orders)
@@ -46,7 +46,7 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasForeignKey(o => o.DeliveryAddressId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(a => a.UserId);
+            builder.HasIndex(a => a.ClientId);
             builder.HasIndex(a => a.IsDefault);
         }
     }

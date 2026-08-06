@@ -13,8 +13,12 @@ public interface IUnitOfWork : IDisposable
     IOrderRepo Orders  { get; }
     IReviewRepo Reviews { get; }
     IUserRepo Users { get; }
+    IChefRepo Chefs { get; }
+    IClientRepo Clients { get; }
     IPaymentRepo Payments { get; }
     INotificationRepo Notifications  { get; }
+    IWalletRepo Wallets { get; set; }
+    IWalletTransactionRepo Transactions { get; set; }
 
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

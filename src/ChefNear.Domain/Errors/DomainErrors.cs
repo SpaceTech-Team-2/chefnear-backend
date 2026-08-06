@@ -90,5 +90,13 @@ public static class DomainErrors
             Error.Validation("Order.InvalidCancellationReason", "The selected cancellation reason does not match your role.");
         public static readonly Error MultipleChefsNotAllowed =
             Error.Validation("Order.MultipleChefsNotAllowed", "All dishes in an order must belong to the same chef.");
+        public static readonly Error OrderMustBeConfirmed = 
+            Error.Validation("Order.MustBeConfirmed", "The order must be in the Confirmed status to perform this operation.");
+        public static readonly Error OrderMustBeAccepted =
+            Error.Validation("Order.MustBeAccepted", "The order must be in the Accepted status to perform this operation.");
+        public static readonly Error OrderMustBePreparing =
+            Error.Validation("Order.MustBePreparing", "The order must be in the Preparing status to perform this operation.");
+        public static readonly Error OrderMustBeReady =
+            Error.Validation("Order.OrderMustBeReady", "The order must be in the Ready status to perform this operation.");
     }
 }

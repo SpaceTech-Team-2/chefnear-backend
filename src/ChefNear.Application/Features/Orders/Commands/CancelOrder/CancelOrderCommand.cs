@@ -7,12 +7,11 @@ using ChefNear.Domain.Enums;
 
 namespace ChefNear.Application.Features.Orders.Commands.CancelOrder;
 
+public record CancelOrderRequest(CancellationReasonType ReasonType, string? ReasonFreeText);
+
 public record CancelOrderCommand(
     Guid OrderId,
     CancellationReasonType ReasonType,
-    string? CustomComment
-) : IRequest<Result>
-{
-    [JsonIgnore]
-    public CurrentUser User { get; set; } = default!;
-}
+    string? ReasonFreeText,
+    CurrentUser User
+) : IRequest<Result>;

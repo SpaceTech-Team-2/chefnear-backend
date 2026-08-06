@@ -24,7 +24,7 @@ public class PlaceOrderCommandHandler(
 
     public async Task<Result<PlaceOrderResponse>> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
     {
-        var existingPayment = await _unitOfWork.Payments.FindFirstAsync(p => p.IdempotencyKey == request.IdempotencyKey.ToString());
+        var existingPayment = await _unitOfWork.Payments.GetAsync(p => p.IdempotencyKey == request.IdempotencyKey.ToString());
 
         if (existingPayment != null)
             return DomainErrors.Payment.IdempotencyKeyAlreadyExists;
@@ -81,13 +81,14 @@ public class PlaceOrderCommandHandler(
             Notes = request.Notes,
             Status = OrderStatus.Pending,
             Payment = payment,
-            OrderItems = orderItems
+            OrderItems = orderItems,
+            ChefId = chefIds.First()
         };
 
         if (request.DeliveryAddressId == null)
         {
             var address = _mapper.Map<Address>(request.DeliveryAddress);
-            address.UserId = order.ClientId;
+            address.ClientId = order.ClientId;
             order.DeliveryAddress = address;
         }
         else

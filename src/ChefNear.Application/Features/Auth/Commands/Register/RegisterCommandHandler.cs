@@ -39,19 +39,57 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
             if (existingUser != null)
                 return DomainErrors.Auth.EmailAlreadyExists;
 
-            var user = new User
+            User user = request.Role switch
             {
-                Id = Guid.NewGuid().ToString(),
-                UserName = request.Email,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                PhotoUrl = request.PhotoUrl,
-                Description = request.Description,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Role = request.Role,
-                Status = UserStatus.Active,
-                KitchenAddressId = null
+                UserRole.Chef => new Chef
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = request.Email,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    PhotoUrl = request.PhotoUrl,
+                    Description = request.Description,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Role = request.Role,
+                    Status = UserStatus.Active
+                },
+                UserRole.Client => new Client
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = request.Email,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    PhotoUrl = request.PhotoUrl,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Role = request.Role,
+                    Status = UserStatus.Active
+                },
+                UserRole.Admin => new Admin
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = request.Email,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    PhotoUrl = request.PhotoUrl,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Role = request.Role,
+                    Status = UserStatus.Active
+                },
+                _ => new User
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = request.Email,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    PhotoUrl = request.PhotoUrl,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Role = request.Role,
+                    Status = UserStatus.Active
+                }
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -72,7 +110,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 var address = new Address
                 {
                     Id = Guid.NewGuid(),
-                    UserId = user.Id,
+                    ClientId = user is Client ? user.Id : null,
                     Label = request.Address.Label,
                     City = request.Address.City,
                     Details = request.Address.Details,
@@ -85,10 +123,10 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 await _unitOfWork.Adresses.AddAsync(address);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (request.Role == UserRole.Chef)
+                if (user is Chef chefUser)
                 {
-                    user.KitchenAddressId = address.Id;
-                    await _userManager.UpdateAsync(user);
+                    chefUser.KitchenAddressId = address.Id;
+                    await _userManager.UpdateAsync(chefUser);
                 }
             }
 

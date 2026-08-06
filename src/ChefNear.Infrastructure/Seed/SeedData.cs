@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +32,7 @@ namespace ChefNear.Infrastructure.Seed
 
                 if (adminUser == null)
                 {
-                    adminUser = new User
+                    adminUser = new Admin
                     {
                         UserName = adminEmail,
                         Email = adminEmail,

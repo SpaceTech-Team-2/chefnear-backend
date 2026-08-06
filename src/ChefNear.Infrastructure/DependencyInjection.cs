@@ -1,9 +1,11 @@
+using ChefNear.Application.Common.Jobs;
 using ChefNear.Application.Common.Payments;
 using ChefNear.Application.Common.Payments.Paymob;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
 using ChefNear.Domain.Entities;
+using ChefNear.Infrastructure.Jobs;
 using ChefNear.Infrastructure.Payments;
 using ChefNear.Infrastructure.Payments.PaymentGateways;
 using ChefNear.Infrastructure.Persistence;
@@ -46,6 +48,8 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepo, UserRepo>();
+        services.AddScoped<IChefRepo, ChefRepo>();
+        services.AddScoped<IClientRepo, ClientRepo>();
         services.AddScoped<ICategoryRepo, CategoryRepo>();
         services.AddScoped<IDishImageRepo, DishImageRepo>();
         services.AddScoped<IDishRepo, DishRepo>();
@@ -62,6 +66,7 @@ public static class DependencyInjection
         services.AddScoped<IDbInitializer, DbInitializer>();
         services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
         services.AddScoped<IPaymobService, PaymobService>();
+        services.AddScoped<IAddChefEarningsJob, AddChefEarningsJob>();
 
         return services;
     }

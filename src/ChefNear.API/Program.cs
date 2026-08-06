@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using System.Text.Json.Serialization;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -35,7 +36,8 @@ try
 
     builder.Services.AddApiServices();
     builder.Services.AddControllers()
-        .AddApplicationPart(typeof(Program).Assembly);
+        .AddApplicationPart(typeof(Program).Assembly)
+        .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
     var jwtSettings = new JwtSettings();
     builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);

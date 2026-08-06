@@ -13,8 +13,6 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
 
             builder.HasKey(o => o.Id);
 
-
-
             builder.Property(o => o.Notes)
                 .HasMaxLength(500)
                 .IsRequired(false);

@@ -67,7 +67,7 @@ public class CancelOrderCommandHandler(
 
         order.Status = OrderStatus.Cancelled;
         order.CancellationReasonType = request.ReasonType;
-        order.CancellationReason = request.CustomComment;
+        order.CancellationReason = request.ReasonFreeText;
 
         // Payment Refund Handling
         if (order.Payment != null)

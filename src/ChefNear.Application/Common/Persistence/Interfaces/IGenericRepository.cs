@@ -10,7 +10,7 @@ namespace ChefNear.Application.Common.Persistence.Interfaces
         Task<T?> GetByIdAsync(Guid id);
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate);
-        Task<T> FindFirstAsync(Expression<Func<T, bool>> predicate);    
+        Task<T> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes);    
         Task<T> AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
