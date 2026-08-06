@@ -42,64 +42,48 @@ public class CancelOrderCommandHandler(
                 return Result.Failure(DomainErrors.Order.InvalidCancellationReason);
 
             // Can only cancel if order status (Accepted | Confirmed)
-            if (order.Status != OrderStatus.Pending && 
-                order.Status != OrderStatus.Accepted && 
+            if (order.Status != OrderStatus.Pending &&
+                order.Status != OrderStatus.Accepted &&
                 order.Status != OrderStatus.Confirmed)
             {
                 return Result.Failure(DomainErrors.Order.CancellationNotAllowed);
             }
 
-            order.CancelledBy = CancelledBy.Client;
-        }
-        else if (isChef)
-        {
-            if (!IsChefReason(request.ReasonType))
-                return Result.Failure(DomainErrors.Order.InvalidCancellationReason);
+            var cancelledBy = isClient ? CancelledBy.Client : CancelledBy.Chef;
+            order.Cancel(cancelledBy, request.ReasonType, request.ReasonFreeText);
 
-            // Chef can cancel at any stage before delivery
-            if (order.Status == OrderStatus.Delivered)
+            // Payment Refund Handling
+            if (order.Payment != null)
             {
-                return Result.Failure(DomainErrors.Order.InvalidOrderStatus);
-            }
-
-            order.CancelledBy = CancelledBy.Chef;
-        }
-
-        order.Status = OrderStatus.Cancelled;
-        order.CancellationReasonType = request.ReasonType;
-        order.CancellationReason = request.ReasonFreeText;
-
-        // Payment Refund Handling
-        if (order.Payment != null)
-        {
-            if (order.Payment.Status == PaymentStatus.Held)
-            {
-                try
+                if (order.Payment.Status == PaymentStatus.Held)
                 {
-                    var paymentGateway = _paymentGatewayFactory.GetGateway(PaymentGateway.Paymob);
-                    var refundTransactionId = await paymentGateway.RefundAsync(order.Payment.GatewayTransactionId!, order.Payment.Amount);
-                    order.Payment.RefundTransactionId = refundTransactionId;
+                    try
+                    {
+                        var paymentGateway = _paymentGatewayFactory.GetGateway(PaymentGateway.Paymob);
+                        var refundTransactionId = await paymentGateway.RefundAsync(order.Payment.GatewayTransactionId!, order.Payment.Amount);
+                        order.Payment.Refund(refundTransactionId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error occurred while calling RefundAsync for OrderId: {OrderId}", order.Id);
+                    }
                 }
-                catch (Exception ex)
+                else if (order.Payment.Status == PaymentStatus.Pending)
                 {
-                    _logger.LogError(ex, "Error occurred while calling RefundAsync for OrderId: {OrderId}", order.Id);
+                    order.Payment.MarkAsFailed("Order cancelled before payment completed.");
                 }
             }
-            else if (order.Payment.Status == PaymentStatus.Pending)
-            {
-                order.Payment.Status = PaymentStatus.Failed;
-                order.Payment.FailureReason = "Order cancelled before payment completed.";
-            }
+
+            // TODO: Notification creation
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Order #{OrderId} successfully cancelled by User {UserId}", order.Id, currentUserId);
         }
-
-        // TODO: Notification creation
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Order #{OrderId} successfully cancelled by User {UserId}", order.Id, currentUserId);
-
+        
         return Result.Success();
     }
+    
 
     private static bool IsClientReason(CancellationReasonType reasonType) =>
         reasonType is CancellationReasonType.ClientChangedMind

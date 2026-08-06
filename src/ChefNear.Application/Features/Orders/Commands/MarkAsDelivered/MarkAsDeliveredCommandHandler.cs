@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Jobs;
+using ChefNear.Application.Common.Jobs;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
 using ChefNear.Domain.Errors;
@@ -35,7 +35,7 @@ public class MarkAsDeliveredCommandHandler(
         if (payment == null)
             return Result.Failure(Error.Failure("OrderNotPaid", "This order not paid yet to mark it as Delivered."));
 
-        order.Status = OrderStatus.Delivered;
+        order.MarkAsDelivered();
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         backgroundJobClient.Enqueue(() => addChefEarningsJob.ExecuteAsync(payment.Id, order.ChefId));

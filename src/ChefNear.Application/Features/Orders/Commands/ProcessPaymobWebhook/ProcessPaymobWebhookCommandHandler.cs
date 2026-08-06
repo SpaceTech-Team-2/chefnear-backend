@@ -69,8 +69,7 @@ public class ProcessPaymobWebhookCommandHandler(
                 return Result.Success();
             }
 
-            payment.Status = PaymentStatus.Refunded;
-            payment.RefundedAt = DateTime.UtcNow;
+            payment.Refund();
 
             _logger.LogInformation(
                 "Payment status updated to Refunded via Paymob webhook. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}",
@@ -99,10 +98,8 @@ public class ProcessPaymobWebhookCommandHandler(
 
         if (transaction.Success)
         {
-            payment.Status = PaymentStatus.Held;
-            payment.HeldAt = DateTime.UtcNow;
-
-            order.Status = OrderStatus.Confirmed;
+            payment.Hold();
+            order.Confirm();
 
             _logger.LogInformation(
                 "Payment held and order confirmed. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}",
@@ -116,11 +113,8 @@ public class ProcessPaymobWebhookCommandHandler(
                 ?? transaction.TxnResponseCode
                 ?? "Unknown failure reason";
 
-            payment.Status = PaymentStatus.Failed;
-            payment.FailureReason = failureReason;
-
-            order.IsDeleted = true;
-            order.DeletedAt = DateTime.UtcNow;
+            payment.MarkAsFailed(failureReason);
+            order.SoftDelete();
 
             _logger.LogWarning(
                 "Payment failed. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}, Reason: {Reason}",

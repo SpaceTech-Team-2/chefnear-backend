@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Jobs;
+using ChefNear.Application.Common.Jobs;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
@@ -52,24 +52,10 @@ internal class AddChefEarningsJob(IUnitOfWork unitOfWork, ILogger<AddChefEarning
         try
         {
             // update Payment Status
-            payment.Status = PaymentStatus.Released;
-            payment.ReleasedAt = DateTime.UtcNow;
+            payment.Release();
 
             // Add earnings to Chef Wallet
-            wallet.Balance += amountToAdd;
-            wallet.TotalEarned += amountToAdd;
-
-            var incomeTransaction = new WalletTransaction
-            {
-                Amount = amountToAdd,
-                AmountAfter = wallet.Balance,
-                Type = WalletTransactionType.OrderIncome,
-                Description = $"Earnings from Order #{payment.OrderId}",
-                OrderId = payment.OrderId,
-            };
-
-            // Add Wallet Transaction 
-            wallet.Transactions.Add(incomeTransaction);
+            wallet.AddEarnings(amountToAdd, payment.OrderId);
 
             await unitOfWork.SaveChangesAsync();
             await transaction.CommitAsync();

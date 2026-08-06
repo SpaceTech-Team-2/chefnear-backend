@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Domain.Enums;
@@ -20,7 +20,7 @@ public class AcceptOrderCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler
         if (order.Status != OrderStatus.Confirmed)
             return Result.Failure(DomainErrors.Order.OrderMustBeConfirmed);
 
-        order.Status = OrderStatus.Accepted;
+        order.Accept();
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // TODO: Publish an event or notification that the order has been accepted

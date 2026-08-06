@@ -1,15 +1,12 @@
 using ChefNear.Domain.Common;
 using HomeChefMarketplace.Domain.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Domain.Entities
 {
-    
     public class Payment : BaseEntity
     {       
-        //a Unique key to ensure idempotency of order creation requests
+        // Unique key to ensure idempotency of order creation requests
         public string IdempotencyKey { get; set; } = string.Empty;
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
@@ -24,10 +21,35 @@ namespace ChefNear.Domain.Entities
         public string? PaymentIntentId { get; set; }
         public string? PaymentGatewayOrderId { get; set; }
 
-        public DateTime? PaidAt { get; set; }
-        public DateTime? HeldAt { get; set; }
-        public DateTime? ReleasedAt { get; set; }
-        public DateTime? RefundedAt { get; set; }
-    }
+        public DateTime? PaidAt { get; private set; }
+        public DateTime? HeldAt { get; private set; }
+        public DateTime? ReleasedAt { get; private set; }
+        public DateTime? RefundedAt { get; private set; }
 
+        public void Hold()
+        {
+            Status = PaymentStatus.Held;
+            HeldAt = DateTime.UtcNow;
+        }
+
+        public void Release()
+        {
+            Status = PaymentStatus.Released;
+            ReleasedAt = DateTime.UtcNow;
+        }
+
+        public void Refund(string? refundTransactionId = null)
+        {
+            Status = PaymentStatus.Refunded;
+            RefundedAt = DateTime.UtcNow;
+            if (!string.IsNullOrEmpty(refundTransactionId))
+                RefundTransactionId = refundTransactionId;
+        }
+
+        public void MarkAsFailed(string reason)
+        {
+            Status = PaymentStatus.Failed;
+            FailureReason = reason;
+        }
+    }
 }

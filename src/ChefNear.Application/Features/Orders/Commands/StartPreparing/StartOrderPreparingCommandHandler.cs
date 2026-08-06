@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Domain.Enums;
@@ -20,8 +20,7 @@ public class StartOrderPreparingCommandHandler(IUnitOfWork unitOfWork) : IReques
         if (order.Status != OrderStatus.Accepted)
             return Result.Failure(DomainErrors.Order.OrderMustBeAccepted);
 
-        order.Status = OrderStatus.Preparing;
-        order.EstimatedCookingTime = request.EstimatedCookingTime;
+        order.StartPreparing(request.EstimatedCookingTime);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // TODO: Publish an event or notification that the order preparation has started

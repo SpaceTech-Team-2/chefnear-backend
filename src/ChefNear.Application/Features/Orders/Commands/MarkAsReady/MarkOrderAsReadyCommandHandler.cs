@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Domain.Enums;
@@ -20,8 +20,7 @@ public class MarkOrderAsReadyCommandHandler(IUnitOfWork unitOfWork) : IRequestHa
         if (order.Status != OrderStatus.Preparing)
             return Result.Failure(DomainErrors.Order.OrderMustBePreparing);
 
-        order.Status = OrderStatus.ReadyForDelivery;
-        order.EstimatedDeliveryTime = request.EstimatedDeliveryTime;
+        order.MarkAsReady(request.EstimatedDeliveryTime);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // TODO: Publish an event or notification that the order is ready for delivery

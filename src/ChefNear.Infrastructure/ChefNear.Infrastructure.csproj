@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>ChefNear.Infrastructure.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Identity\**" />
     <Compile Remove="Persistence\Migrations\**" />
     <EmbeddedResource Remove="Identity\**" />

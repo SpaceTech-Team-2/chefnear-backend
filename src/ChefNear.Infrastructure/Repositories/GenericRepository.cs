@@ -1,3 +1,4 @@
+#nullable enable
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ChefNear.Application.Common.Persistence.Interfaces;
@@ -52,11 +53,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return Task.CompletedTask;
     }
 
-    public async Task<T> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+    public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes)
     {
         var query = _dbContext.Set<T>().AsQueryable();
 
-        if (includes.Any())
+        if (includes != null && includes.Any())
         {
             foreach (var include in includes)
                 query = query.Include(include);
