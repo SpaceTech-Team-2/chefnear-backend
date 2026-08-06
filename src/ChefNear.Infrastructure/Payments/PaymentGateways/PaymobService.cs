@@ -46,16 +46,13 @@ internal class PaymobService(
                 5817122,
                 5772602
             },
-            items = new[]
+            items = orderSummary.Items.Select(item => new
             {
-                new
-                {
-                    name = orderSummary.DishName,
-                    amount = orderSummary.TotalAmount * 100,
-                    description = "Home chef order",
-                    quantity = orderSummary.Quantity
-                }
-            },
+                name = item.DishName,
+                amount = (int)Math.Round(item.UnitPrice * item.Quantity * 100),
+                description = "Home chef order item",
+                quantity = item.Quantity
+            }).ToArray(),
             billing_data = new
             {
                 first_name = orderSummary.ClientFirstName,

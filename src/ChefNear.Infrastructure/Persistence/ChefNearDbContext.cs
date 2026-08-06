@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ChefNear.Domain.Entities;
 using ChefNear.Infrastructure.Persistence.Configurations;
@@ -21,6 +21,7 @@ namespace ChefNear.Infrastructure.Persistence
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
@@ -28,7 +29,7 @@ namespace ChefNear.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            // تطبيق كل الـ Configurations
+            // Apply configuration files
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new AddressConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
@@ -36,6 +37,7 @@ namespace ChefNear.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new DishImageConfiguration());
             modelBuilder.ApplyConfiguration(new IngredientConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
             modelBuilder.ApplyConfiguration(new PaymentConfiguration());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
             modelBuilder.ApplyConfiguration(new DisputeConfiguration());

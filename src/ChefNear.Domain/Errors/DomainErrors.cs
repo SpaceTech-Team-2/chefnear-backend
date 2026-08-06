@@ -88,5 +88,7 @@ public static class DomainErrors
             Error.Forbidden("Order.UnauthorizedCancellation", "You are not authorized to cancel this order.");
         public static readonly Error InvalidCancellationReason =
             Error.Validation("Order.InvalidCancellationReason", "The selected cancellation reason does not match your role.");
+        public static readonly Error MultipleChefsNotAllowed =
+            Error.Validation("Order.MultipleChefsNotAllowed", "All dishes in an order must belong to the same chef.");
     }
 }

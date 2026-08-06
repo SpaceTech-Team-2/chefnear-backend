@@ -9,13 +9,9 @@ namespace ChefNear.Domain.Entities
         public string ClientId { get; set; } = string.Empty; 
         public User Client { get; set; } = null!;
 
-        public Guid DishId { get; set; }
-        public Dish Dish { get; set; } = null!;
-
         public Guid DeliveryAddressId { get; set; }
         public Address DeliveryAddress { get; set; } = null!;
 
-        public int Quantity { get; set; }
         public string? Notes { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
   
@@ -27,6 +23,7 @@ namespace ChefNear.Domain.Entities
         public Review? Review { get; set; }
         public Dispute? Dispute { get; set; }
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
     }

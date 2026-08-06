@@ -21,7 +21,8 @@ namespace ChefNear.Infrastructure.Repositories
         {
             return await _db.Orders
                 .Include(o => o.Payment)
-                .Include(o => o.Dish)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Dish)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
     }

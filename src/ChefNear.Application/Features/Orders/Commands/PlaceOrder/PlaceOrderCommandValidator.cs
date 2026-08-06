@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 
@@ -6,11 +6,17 @@ public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
 {
     public PlaceOrderCommandValidator()
     {
-        RuleFor(x => x.DishId)
-            .NotEmpty().WithMessage("DishId is required.");
+        RuleFor(x => x.Items)
+            .NotEmpty().WithMessage("Order must contain at least one item.");
 
-        RuleFor(x => x.Quantity)
-            .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        RuleForEach(x => x.Items).ChildRules(item =>
+        {
+            item.RuleFor(i => i.DishId)
+                .NotEmpty().WithMessage("DishId is required.");
+
+            item.RuleFor(i => i.Quantity)
+                .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        });
 
         RuleFor(x => x.Notes)
             .MaximumLength(500).WithMessage("Notes cannot exceed 500 characters.");

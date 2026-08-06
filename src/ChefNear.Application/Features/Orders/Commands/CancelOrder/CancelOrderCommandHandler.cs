@@ -31,7 +31,7 @@ public class CancelOrderCommandHandler(
 
         var currentUserId = request.User.Id;
         var isClient = order.ClientId == currentUserId;
-        var isChef = order.Dish != null && order.Dish.ChefId == currentUserId;
+        var isChef = order.OrderItems.Any(item => item.Dish != null && item.Dish.ChefId == currentUserId);
 
         if (!isClient && !isChef)
             return Result.Failure(DomainErrors.Order.UnauthorizedCancellation);

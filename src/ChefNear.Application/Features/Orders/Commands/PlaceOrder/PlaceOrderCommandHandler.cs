@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ChefNear.Application.Common.Payments;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
@@ -26,36 +26,62 @@ public class PlaceOrderCommandHandler(
     {
         var existingPayment = await _unitOfWork.Payments.FindFirstAsync(p => p.IdempotencyKey == request.IdempotencyKey.ToString());
 
-        // Check if a payment with the same idempotency key already exists
         if (existingPayment != null)
             return DomainErrors.Payment.IdempotencyKeyAlreadyExists;
 
-        var dish = await _unitOfWork.Dishes.GetByIdAsync(request.DishId);
-
-        if (dish == null)
-            return DomainErrors.Dish.DishNotFound;
-
-        if (dish.Status != DishStatus.Available)
-            return DomainErrors.Dish.DishUnavailable;
-
         if (request.DeliveryAddressId == null && request.DeliveryAddress == null)
             return DomainErrors.Order.DeliveryAddressNotProvided;
+
+        var dishIds = request.Items.Select(i => i.DishId).Distinct().ToList();
+        var dishes = await _unitOfWork.Dishes.FindAsync(d => dishIds.Contains(d.Id));
+
+        if (dishes.Count != dishIds.Count)
+            return DomainErrors.Dish.DishNotFound;
+
+        if (dishes.Any(d => d.Status != DishStatus.Available))
+            return DomainErrors.Dish.DishUnavailable;
+
+        var chefIds = dishes.Select(d => d.ChefId).Distinct().ToList();
+        if (chefIds.Count > 1)
+            return DomainErrors.Order.MultipleChefsNotAllowed;
+
+        decimal totalAmount = 0;
+        var orderItems = new List<OrderItem>();
+        var itemSummaries = new List<OrderItemSummary>();
+
+        foreach (var item in request.Items)
+        {
+            var dish = dishes.First(d => d.Id == item.DishId);
+            totalAmount += dish.Price * item.Quantity;
+
+            orderItems.Add(new OrderItem
+            {
+                DishId = dish.Id,
+                Quantity = item.Quantity
+            });
+
+            itemSummaries.Add(new OrderItemSummary
+            {
+                DishName = dish.Name,
+                UnitPrice = dish.Price,
+                Quantity = item.Quantity
+            });
+        }
 
         var payment = new Payment
         {
             IdempotencyKey = request.IdempotencyKey.ToString(),
             Status = PaymentStatus.Pending,
-            Amount = dish.Price * request.Quantity,
+            Amount = totalAmount,
         };
 
         var order = new Order
         {
             ClientId = request.Client.Id,
-            DishId = request.DishId,
-            Quantity = request.Quantity,
             Notes = request.Notes,
             Status = OrderStatus.Pending,
-            Payment = payment
+            Payment = payment,
+            OrderItems = orderItems
         };
 
         if (request.DeliveryAddressId == null)
@@ -89,8 +115,7 @@ public class PlaceOrderCommandHandler(
                 ClientFirstName = request.Client.FirstName,
                 ClientLastName = request.Client.LastName,
                 ClientPhone = request.Client.PhoneNumber,
-                DishName = dish.Name,
-                Quantity = request.Quantity,
+                Items = itemSummaries,
                 TotalAmount = payment.Amount,
             };
 
@@ -109,13 +134,11 @@ public class PlaceOrderCommandHandler(
         catch (PaymentGatewayException ex)
         {
             _logger.LogError(ex,
-                "Failed to create payment intent. OrderId: {OrderId}, PaymentId: {PaymentId}, ClientId: {ClientId}, ChefId: {ChefId}, DishId: {DishId}, Quantity: {Quantity}, TotalAmount: {TotalAmount}",
+                "Failed to create payment intent. OrderId: {OrderId}, PaymentId: {PaymentId}, ClientId: {ClientId}, ChefId: {ChefId}, TotalAmount: {TotalAmount}",
                 order.Id,
                 payment.Id,
                 order.ClientId,
-                dish.ChefId,
-                order.DishId,
-                order.Quantity,
+                chefIds.FirstOrDefault(),
                 payment.Amount
             );
 

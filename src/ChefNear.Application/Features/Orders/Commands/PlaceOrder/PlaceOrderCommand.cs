@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Features.Auth.DTOs;
+using ChefNear.Application.Features.Auth.DTOs;
 using ChefNear.Application.Model;
 using ChefNear.Domain.Enums;
 using ChefNear.Shared.ResultPattern;
@@ -7,10 +7,11 @@ using System.Text.Json.Serialization;
 
 namespace ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 
+public record OrderItemRequest(Guid DishId, int Quantity);
+
 public record PlaceOrderCommand( 
     Guid IdempotencyKey,
-    Guid DishId,
-    int Quantity,
+    List<OrderItemRequest> Items,
     string Notes,
     Guid? DeliveryAddressId,
     AddressDto? DeliveryAddress,

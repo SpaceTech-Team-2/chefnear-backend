@@ -8,8 +8,6 @@ namespace ChefNear.Domain.Entities
 {
     public class User : IdentityUser 
     {
-       
-
         public UserRole Role { get; set; }
         public UserStatus Status { get; set; } = UserStatus.Active;
 
