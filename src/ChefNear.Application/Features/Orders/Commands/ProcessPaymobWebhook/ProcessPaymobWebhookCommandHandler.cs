@@ -42,18 +42,6 @@ public class ProcessPaymobWebhookCommandHandler(
             return Result.Failure(DomainErrors.Payment.PaymentNotFound);
         }
 
-        // Idempotency: if already processed, return success without re-processing
-        if (payment.Status == PaymentStatus.Held || payment.Status == PaymentStatus.Failed)
-        {
-            _logger.LogInformation(
-                "Paymob webhook received for already-processed payment. PaymentId: {PaymentId}, Status: {Status}, TransactionId: {TransactionId}",
-                paymentId,
-                payment.Status,
-                transaction.TransactionId);
-
-            return Result.Success();
-        }
-
         var order = await _unitOfWork.Orders.GetByIdAsync(payment.OrderId);
 
         if (order is null)
@@ -65,6 +53,46 @@ public class ProcessPaymobWebhookCommandHandler(
                 transaction.TransactionId);
 
             return Result.Failure(DomainErrors.Order.OrderNotFound);
+        }
+
+        // Handle Refund Callback
+        if (transaction.IsRefunded)
+        {
+            if (payment.Status == PaymentStatus.Refunded)
+            {
+                _logger.LogInformation(
+                    "Paymob webhook received for already-refunded payment. PaymentId: {PaymentId}, Status: {Status}, TransactionId: {TransactionId}",
+                    paymentId,
+                    payment.Status,
+                    transaction.TransactionId);
+
+                return Result.Success();
+            }
+
+            payment.Status = PaymentStatus.Refunded;
+            payment.RefundedAt = DateTime.UtcNow;
+
+            _logger.LogInformation(
+                "Payment status updated to Refunded via Paymob webhook. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}",
+                paymentId,
+                order.Id,
+                transaction.TransactionId);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+
+        // Idempotency: if already processed for payment holding/failure/refund, return success without re-processing
+        if (payment.Status == PaymentStatus.Held || payment.Status == PaymentStatus.Failed || payment.Status == PaymentStatus.Refunded)
+        {
+            _logger.LogInformation(
+                "Paymob webhook received for already-processed payment. PaymentId: {PaymentId}, Status: {Status}, TransactionId: {TransactionId}",
+                paymentId,
+                payment.Status,
+                transaction.TransactionId);
+
+            return Result.Success();
         }
 
         payment.GatewayTransactionId = transaction.TransactionId.ToString();

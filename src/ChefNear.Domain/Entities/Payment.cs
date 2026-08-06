@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Common;
+using ChefNear.Domain.Common;
 using HomeChefMarketplace.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -20,12 +20,14 @@ namespace ChefNear.Domain.Entities
         public string? FailureReason { get; set; } 
 
         public string? GatewayTransactionId { get; set; }
+        public string? RefundTransactionId { get; set; }
         public string? PaymentIntentId { get; set; }
         public string? PaymentGatewayOrderId { get; set; }
 
         public DateTime? PaidAt { get; set; }
         public DateTime? HeldAt { get; set; }
         public DateTime? ReleasedAt { get; set; }
+        public DateTime? RefundedAt { get; set; }
     }
 
 }

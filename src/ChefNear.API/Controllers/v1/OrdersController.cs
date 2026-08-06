@@ -1,4 +1,5 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
+using ChefNear.Application.Features.Orders.Commands.CancelOrder;
 using ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 using ChefNear.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -18,5 +19,15 @@ public class OrdersController : BaseApiController
 
         var result = await Mediator.Send(command);
         return HandleResult(result);
+    }
+
+    [HttpPost("{id:guid}/cancel")]
+    [Authorize]
+    public async Task<IActionResult> Cancel([FromRoute] Guid id, [FromBody] CancelOrderCommand command)
+    {
+        command = command with { OrderId = id, User = GetUser() };
+
+        var result = await Mediator.Send(command);
+        return HandleResult(result, "Order cancelled successfully.");
     }
 }

@@ -1,10 +1,6 @@
-﻿using ChefNear.Domain.Common;
+using ChefNear.Domain.Common;
+using ChefNear.Domain.Enums;
 using HomeChefMarketplace.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 
 namespace ChefNear.Domain.Entities
 {
@@ -24,6 +20,7 @@ namespace ChefNear.Domain.Entities
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
   
         public CancelledBy? CancelledBy { get; set; }
+        public CancellationReasonType? CancellationReasonType { get; set; }
         public string? CancellationReason { get; set; }
 
         public Payment? Payment { get; set; }

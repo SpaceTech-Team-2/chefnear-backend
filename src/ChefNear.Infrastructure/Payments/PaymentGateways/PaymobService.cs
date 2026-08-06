@@ -1,4 +1,4 @@
-﻿using ChefNear.Application.Common.Payments;
+using ChefNear.Application.Common.Payments;
 using ChefNear.Application.Common.Payments.Paymob;
 using ChefNear.Application.Model;
 using ChefNear.Domain.Exceptions;
@@ -30,7 +30,7 @@ internal class PaymobService(
     {
         using var client = httpClientFactory.CreateClient();
 
-        var url = $"{paymobSettings.BaseUrl}/{paymobSettings.Endpoints.Intention}";
+        var url = $"{paymobSettings.BaseUrl.TrimEnd('/')}/{paymobSettings.Endpoints.Intention.TrimStart('/')}";
 
         var request = new HttpRequestMessage(HttpMethod.Post, url);
 
@@ -64,8 +64,8 @@ internal class PaymobService(
                 phone_number = orderSummary.ClientPhone
             },
             special_reference = orderSummary.PaymentId.ToString(),
-            notification_url = $"{appUrlSettings.ApiBaseUrl}/{paymobSettings.WebhookRoute}",
-            redirection_url = $"{frontendSettings.BaseUrl}/{frontendSettings.Routes.PaymentResultUrl}"
+            notification_url = $"{appUrlSettings.ApiBaseUrl.TrimEnd('/')}/{paymobSettings.WebhookRoute.TrimStart('/')}",
+            redirection_url = $"{frontendSettings.BaseUrl.TrimEnd('/')}/{frontendSettings.Routes.PaymentResultUrl.TrimStart('/')}"
         };
 
         request.Content = JsonContent.Create(requestBody);
@@ -178,9 +178,98 @@ internal class PaymobService(
         }
     }
 
-    public Task RefundAsync(string transactionId)
+    public async Task<string> RefundAsync(string transactionId, decimal amount)
     {
-        throw new NotImplementedException();
+        using var client = httpClientFactory.CreateClient();
+
+        var endpoint = string.IsNullOrWhiteSpace(paymobSettings.Endpoints?.Refund)
+            ? "api/acceptance/void_refund/refund"
+            : paymobSettings.Endpoints.Refund;
+
+        var url = $"{paymobSettings.BaseUrl.TrimEnd('/')}/{endpoint.TrimStart('/')}";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+        request.Headers.Authorization =
+            new AuthenticationHeaderValue("Token", paymobSettings.SecretKey);
+
+        var requestBody = new
+        {
+            auth_token = paymobSettings.SecretKey,
+            transaction_id = transactionId,
+            amount_cents = (int)Math.Round(amount * 100)
+        };
+
+        request.Content = JsonContent.Create(requestBody);
+
+        try
+        {
+            logger.LogInformation(
+                "Initiating Paymob refund. TransactionId: {TransactionId}, Amount: {Amount}",
+                transactionId,
+                amount);
+
+            var response = await client.SendAsync(request);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError(
+                    "Paymob refund failed. StatusCode: {StatusCode}, TransactionId: {TransactionId}, Response: {Response}",
+                    response.StatusCode,
+                    transactionId,
+                    responseContent);
+
+                throw new PaymentGatewayException(
+                    $"Paymob refund returned {(int)response.StatusCode} ({response.StatusCode}).",
+                    (int)response.StatusCode);
+            }
+
+            // Parse the refund child transaction ID from the response
+            using var doc = JsonDocument.Parse(responseContent);
+            var refundTransactionId = doc.RootElement.GetProperty("id").GetInt64().ToString();
+
+            logger.LogInformation(
+                "Paymob refund initiated successfully. TransactionId: {TransactionId}, RefundTransactionId: {RefundTransactionId}",
+                transactionId,
+                refundTransactionId);
+
+            return refundTransactionId;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(
+                ex,
+                "Network error while calling Paymob refund. TransactionId: {TransactionId}",
+                transactionId);
+
+            throw new PaymentGatewayException(
+                "Unable to communicate with the payment gateway.",
+                (int)HttpStatusCode.ServiceUnavailable,
+                ex);
+        }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogError(
+                ex,
+                "Paymob refund request timed out. TransactionId: {TransactionId}",
+                transactionId);
+
+            throw new PaymentGatewayException(
+                "Payment gateway request timed out.",
+                (int)HttpStatusCode.ServiceUnavailable,
+                ex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Unexpected error while processing Paymob refund. TransactionId: {TransactionId}",
+                transactionId);
+
+            throw;
+        }
     }
 
     public Task VerifyWebhookAsync(HttpRequest request)

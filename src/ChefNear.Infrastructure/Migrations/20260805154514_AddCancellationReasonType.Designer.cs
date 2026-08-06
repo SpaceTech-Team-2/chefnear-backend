@@ -4,6 +4,7 @@ using ChefNear.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChefNear.Infrastructure.Migrations
 {
     [DbContext(typeof(ChefNearDbContext))]
-    partial class ChefNearDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260805154514_AddCancellationReasonType")]
+    partial class AddCancellationReasonType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,13 +446,6 @@ namespace ChefNear.Infrastructure.Migrations
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RefundTransactionId")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("RefundedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ReleasedAt")
                         .HasColumnType("datetime2");

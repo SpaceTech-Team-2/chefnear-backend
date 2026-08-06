@@ -33,6 +33,13 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
             builder.Property(p => p.ReleasedAt)
                 .IsRequired(false);
 
+            builder.Property(p => p.RefundTransactionId)
+                .HasMaxLength(200)
+                .IsRequired(false);
+
+            builder.Property(p => p.RefundedAt)
+                .IsRequired(false);
+
             builder.HasOne(p => p.Order)
                 .WithOne(o => o.Payment)
                 .HasForeignKey<Payment>(p => p.OrderId)

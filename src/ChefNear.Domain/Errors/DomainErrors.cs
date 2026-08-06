@@ -80,5 +80,13 @@ public static class DomainErrors
             Error.Validation("Order.InvalidOrderStatus", "Invalid order status for this operation.");
         public static readonly Error DeliveryAddressNotProvided =
             Error.Validation("Order.DeliveryAddressNotProvided", "Delivery address is required.");
+        public static readonly Error OrderAlreadyCancelled =
+            Error.Validation("Order.OrderAlreadyCancelled", "This order has already been cancelled.");
+        public static readonly Error CancellationNotAllowed =
+            Error.Validation("Order.CancellationNotAllowed", "Cancellation is not allowed once preparation has started.");
+        public static readonly Error UnauthorizedCancellation =
+            Error.Forbidden("Order.UnauthorizedCancellation", "You are not authorized to cancel this order.");
+        public static readonly Error InvalidCancellationReason =
+            Error.Validation("Order.InvalidCancellationReason", "The selected cancellation reason does not match your role.");
     }
 }

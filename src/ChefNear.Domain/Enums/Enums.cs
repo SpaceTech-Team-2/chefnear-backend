@@ -80,3 +80,4 @@ public enum NotificationStatus
     Sent = 2,
     Failed = 3
 }
+

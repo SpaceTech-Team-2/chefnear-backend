@@ -1,4 +1,4 @@
-﻿namespace ChefNear.Infrastructure.Settings;
+namespace ChefNear.Infrastructure.Settings;
 
 public class PaymobSettings
 {
@@ -14,4 +14,5 @@ public class PaymobSettings
 public class Endpoints
 {
     public string Intention { get; set; } = string.Empty;
+    public string Refund { get; set; } = string.Empty;
 }

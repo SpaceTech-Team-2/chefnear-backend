@@ -30,6 +30,9 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasMaxLength(500)
                 .IsRequired(false);
 
+            builder.Property(o => o.CancellationReasonType)
+                .IsRequired(false);
+
             // العلاقات
 
             // Order (M) → User (1) (Client)
