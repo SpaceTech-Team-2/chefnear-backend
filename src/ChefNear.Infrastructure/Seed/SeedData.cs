@@ -38,6 +38,7 @@ namespace ChefNear.Infrastructure.Seed
                         Email = adminEmail,
                         DisplayName = "Admin",
                         Role = UserRole.Admin,
+                        EmailConfirmed=true,
                         Status = UserStatus.Active
                     };
 

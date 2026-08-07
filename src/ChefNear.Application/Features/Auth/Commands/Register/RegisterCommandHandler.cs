@@ -17,7 +17,6 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IBackgroundJobClient _backgroundJobClient;
-
         public RegisterCommandHandler(
             UserManager<User> userManager,
             ILogger<RegisterCommandHandler> logger,
@@ -107,7 +106,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
 
             if (request.Address != null)
             {
-                var address = new Address
+                var address = new Domain.Entities.Address
                 {
                     Id = Guid.NewGuid(),
                     ClientId = user is Client ? user.Id : null,

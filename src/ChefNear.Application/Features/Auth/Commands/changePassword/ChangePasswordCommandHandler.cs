@@ -1,4 +1,5 @@
 using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Features.Auth.Commands.ChangePassword;
 using ChefNear.Application.Interfaces;
 using ChefNear.Domain.Entities;
 using ChefNear.Domain.Errors;
@@ -11,6 +12,7 @@ namespace ChefNear.Application.Features.Auth.Commands.changePassword
 {
     public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComand, Result<ChangePasswordResponse>>
     {
+    
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserService _currentUserService;
         private readonly IRefreshTokenService _refreshTokenService;

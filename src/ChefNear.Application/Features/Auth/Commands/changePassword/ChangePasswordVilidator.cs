@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ChefNear.Application.Features.Auth.Commands.changePassword
 {
-    public class ChangePasswordVilidator : AbstractValidator<ChangePasswordComand>
+    public class ChangePasswordVilidator : AbstractValidator<ChangePassword.ChangePasswordComand>
     {
         public ChangePasswordVilidator()
         {

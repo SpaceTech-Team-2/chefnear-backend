@@ -61,11 +61,13 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepo, OrderRepo>();
         services.AddScoped<IPaymentRepo, PaymentRepo>();
         services.AddScoped<IReviewRepo, ReviewRepo>();
+        services.AddScoped<IFileStorageService, CloudinaryFileStorageService>();
         services.AddTransient<IEmailService, EmailService>();
         services.AddScoped<IJWTService, JWTService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDbInitializer, DbInitializer>();
+        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));   
         services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
         services.AddScoped<IPaymobService, PaymobService>();
         services.AddScoped<IAddChefEarningsJob, AddChefEarningsJob>();

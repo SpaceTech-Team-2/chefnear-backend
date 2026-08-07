@@ -35,9 +35,8 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 .When(x => !string.IsNullOrEmpty(x.LastName));
 
             // Phone Number
-            RuleFor(x => x.PhoneNumber)
-                .Matches(@"^01[0-9]{9}$").WithMessage("Invalid phone number format")
-                .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
+            RuleFor(x => x.PhoneNumber).NotEmpty()
+                .Matches(@"^01[0-9]{9}$").WithMessage("Invalid phone number format");
 
             // Role
             RuleFor(x => x.Role)
