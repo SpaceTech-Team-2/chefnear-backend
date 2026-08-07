@@ -87,7 +87,7 @@ public class PlaceOrderCommandHandler(
 
         if (request.DeliveryAddressId == null)
         {
-            var address = _mapper.Map<Address>(request.DeliveryAddress);
+            var address = _mapper.Map<Domain.Entities.Address>(request.DeliveryAddress);
             address.ClientId = order.ClientId;
             order.DeliveryAddress = address;
         }

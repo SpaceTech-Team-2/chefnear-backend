@@ -21,7 +21,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage
 
         public async Task<Result> Handle(RemoveDishImageCommand request, CancellationToken cancellationToken)
         {
-            var image = await _unitOfWork.dishImages.GetByIdAsync(request.ImageId);
+            var image = await _unitOfWork.DishImages.GetByIdAsync(request.ImageId);
 
             if (image == null)
             {
@@ -29,7 +29,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage
                     Error.NotFound("DishImage.NotFound", "Image not found."));
             }
 
-            var dish = await _unitOfWork.dishes.GetByIdAsync(image.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(image.DishId);
 
             if (dish == null)
             {
@@ -46,7 +46,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage
             var wasPrimary = image.IsPrimary;
             var imageUrl = image.ImageUrl;
 
-            await _unitOfWork.dishImages.DeleteAsync(image);
+            await _unitOfWork.DishImages.DeleteAsync(image);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             try
@@ -59,7 +59,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage
 
             if (wasPrimary)
             {
-                var images = await _unitOfWork.dishImages.GetAllAsync();
+                var images = await _unitOfWork.DishImages.GetAllAsync();
 
                 var nextImage = images
                     .Where(i => i.DishId == dish.Id)

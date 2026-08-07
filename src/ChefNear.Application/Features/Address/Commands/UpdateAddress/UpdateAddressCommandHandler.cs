@@ -15,7 +15,7 @@ public class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressCommand,
 
     public async Task<Result> Handle(UpdateAddressCommand request, CancellationToken cancellationToken)
     {
-        var address = await _unitOfWork.adresses.GetByIdAsync(request.AddressId);
+        var address = await _unitOfWork.Adresses.GetByIdAsync(request.AddressId);
 
         if (address == null)
         {
@@ -24,7 +24,7 @@ public class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressCommand,
             );
         }
 
-        if (address.UserId != request.UserId.ToString())
+        if (address.ClientId != request.UserId.ToString())
         {
             return Result.Failure(
                 Error.Forbidden("Address.Forbidden", "You cannot update this address.")
@@ -33,9 +33,9 @@ public class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressCommand,
 
         if (request.IsDefault)
         {
-            var addresses = await _unitOfWork.adresses.GetAllAsync();
+            var addresses = await _unitOfWork.Adresses.GetAllAsync();
 
-            foreach (var add in addresses.Where(a => a.UserId == request.UserId.ToString() && a.IsDefault))
+            foreach (var add in addresses.Where(a => a.ClientId == request.UserId.ToString() && a.IsDefault))
             {
                 add.IsDefault = false;
             }

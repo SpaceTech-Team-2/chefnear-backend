@@ -19,10 +19,10 @@ public class GetUserAddressesQueryHandler
         GetUserAddressesQuery request,
         CancellationToken cancellationToken)
     {
-        var addresses = await _unitOfWork.adresses.GetAllAsync();
+        var addresses = await _unitOfWork.Adresses.GetAllAsync();
 
         return addresses
-            .Where(a => a.UserId == request.UserId.ToString())
+            .Where(a => a.ClientId == request.UserId.ToString())
             .OrderByDescending(a => a.IsDefault)
             .Select(a => new AddressDto
             {

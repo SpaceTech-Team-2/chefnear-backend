@@ -26,9 +26,9 @@ public class CreateAddressCommandHandler
 
         if (request.IsDefault)
         {
-            var addresses = await _unitOfWork.adresses.GetAllAsync();
+            var addresses = await _unitOfWork.Adresses.GetAllAsync();
 
-            foreach (var add in addresses.Where(a => a.UserId == request.UserId.ToString() && a.IsDefault))
+            foreach (var add in addresses.Where(a => a.ClientId == request.UserId.ToString() && a.IsDefault))
             {
                 add.IsDefault = false;
             }
@@ -36,7 +36,7 @@ public class CreateAddressCommandHandler
 
         var address = new Domain.Entities.Address
         {
-            UserId = request.UserId.ToString(),
+            ClientId = request.UserId.ToString(),
             Label = request.Label,
             City = request.City,
             Details = request.Details,
@@ -45,7 +45,7 @@ public class CreateAddressCommandHandler
             IsDefault = request.IsDefault
         };
 
-        await _unitOfWork.adresses.AddAsync(address);
+        await _unitOfWork.Adresses.AddAsync(address);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

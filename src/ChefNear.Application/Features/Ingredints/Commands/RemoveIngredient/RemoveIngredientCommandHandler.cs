@@ -16,12 +16,12 @@ namespace ChefNear.Application.Features.Ingredints.Commands.RemoveIngredient
 
         public async Task<Result> Handle(RemoveIngredientCommand request, CancellationToken cancellationToken)
         {
-            var ingredient = await _unitOfWork.ingredients.GetByIdAsync(request.IngredientId);
+            var ingredient = await _unitOfWork.Ingredients.GetByIdAsync(request.IngredientId);
 
             if (ingredient == null)
                 return Result<Guid>.Failure( Error.NotFound("Ingredient.NotFound", "Ingredient not found."));
 
-            var dish = await _unitOfWork.dishes.GetByIdAsync(ingredient.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(ingredient.DishId);
 
             if (dish == null)
                 return Result<Guid>.Failure(Error.NotFound("Dish.NotFound", "Dish not found."));
@@ -29,7 +29,7 @@ namespace ChefNear.Application.Features.Ingredints.Commands.RemoveIngredient
             if (dish.ChefId != request.ChefId)
                 return Result<Guid>.Failure(Error.Forbidden("Dish.NotOwner", "Only the owner can remove this ingredient."));
 
-           await _unitOfWork.ingredients.DeleteAsync(ingredient);
+           await _unitOfWork.Ingredients.DeleteAsync(ingredient);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

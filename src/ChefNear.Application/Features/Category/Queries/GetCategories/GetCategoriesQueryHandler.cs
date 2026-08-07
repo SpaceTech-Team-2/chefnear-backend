@@ -18,9 +18,9 @@ public class GetCategoriesQueryHandler
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        var categories = await _unitOfWork.categories.GetAllAsync();
+        var Categories = await _unitOfWork.Categories.GetAllAsync();
 
-        return categories
+        return Categories
             .OrderBy(c => c.Name)
             .Select(c => new CategoryDto
             {
