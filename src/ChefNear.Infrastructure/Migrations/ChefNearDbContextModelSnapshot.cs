@@ -377,9 +377,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<Guid>("DeliveryAddressId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DishId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<TimeSpan?>("EstimatedCookingTime")
                         .HasColumnType("time");
 
@@ -409,8 +406,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("DeliveryAddressId");
-
-                    b.HasIndex("DishId");
 
                     b.HasIndex("Status");
 
@@ -1052,10 +1047,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ChefNear.Domain.Entities.Dish", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("DishId");
-
                     b.Navigation("Chef");
 
                     b.Navigation("Client");
@@ -1261,8 +1252,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Ingredients");
 
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Orders");
 
                     b.Navigation("Reviews");
                 });

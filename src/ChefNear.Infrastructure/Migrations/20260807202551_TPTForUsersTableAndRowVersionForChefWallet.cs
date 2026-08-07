@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChefNear.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTPTForUserChefClientAdmin : Migration
+    public partial class TPTForUsersTableAndRowVersionForChefWallet : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,11 +67,20 @@ namespace ChefNear.Infrastructure.Migrations
                 name: "UserId",
                 table: "Addresses");
 
-            migrationBuilder.AddColumn<Guid>(
-                name: "DishId",
+            migrationBuilder.AddColumn<byte[]>(
+                name: "RowVersion",
+                table: "Wallets",
+                type: "rowversion",
+                rowVersion: true,
+                nullable: false,
+                defaultValue: new byte[0]);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ChefId",
                 table: "Orders",
-                type: "uniqueidentifier",
-                nullable: true);
+                type: "nvarchar(450)",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "ClientId",
@@ -146,9 +155,9 @@ namespace ChefNear.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_DishId",
+                name: "IX_Orders_ChefId",
                 table: "Orders",
-                column: "DishId");
+                column: "ChefId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_ClientId",
@@ -185,19 +194,20 @@ namespace ChefNear.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Orders_Chefs_ChefId",
+                table: "Orders",
+                column: "ChefId",
+                principalTable: "Chefs",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Orders_Clients_ClientId",
                 table: "Orders",
                 column: "ClientId",
                 principalTable: "Clients",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Orders_Dishes_DishId",
-                table: "Orders",
-                column: "DishId",
-                principalTable: "Dishes",
-                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reviews_Clients_ClientId",
@@ -232,11 +242,11 @@ namespace ChefNear.Infrastructure.Migrations
                 table: "Disputes");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Orders_Clients_ClientId",
+                name: "FK_Orders_Chefs_ChefId",
                 table: "Orders");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Orders_Dishes_DishId",
+                name: "FK_Orders_Clients_ClientId",
                 table: "Orders");
 
             migrationBuilder.DropForeignKey(
@@ -261,7 +271,7 @@ namespace ChefNear.Infrastructure.Migrations
                 table: "Wallets");
 
             migrationBuilder.DropIndex(
-                name: "IX_Orders_DishId",
+                name: "IX_Orders_ChefId",
                 table: "Orders");
 
             migrationBuilder.DropIndex(
@@ -269,7 +279,11 @@ namespace ChefNear.Infrastructure.Migrations
                 table: "Addresses");
 
             migrationBuilder.DropColumn(
-                name: "DishId",
+                name: "RowVersion",
+                table: "Wallets");
+
+            migrationBuilder.DropColumn(
+                name: "ChefId",
                 table: "Orders");
 
             migrationBuilder.DropColumn(

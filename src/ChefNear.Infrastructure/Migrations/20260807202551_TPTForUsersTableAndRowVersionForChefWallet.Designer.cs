@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChefNear.Infrastructure.Migrations
 {
     [DbContext(typeof(ChefNearDbContext))]
-    [Migration("20260806184956_AddTPTForUserChefClientAdmin")]
-    partial class AddTPTForUserChefClientAdmin
+    [Migration("20260807202551_TPTForUsersTableAndRowVersionForChefWallet")]
+    partial class TPTForUsersTableAndRowVersionForChefWallet
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,43 +102,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Categories", (string)null);
-                });
-
-            modelBuilder.Entity("ChefNear.Domain.Entities.ChefWallet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ChefId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TotalEarned")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalWithdrawn")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChefId")
-                        .IsUnique();
-
-                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Dish", b =>
@@ -400,6 +363,10 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<string>("CancelledBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ChefId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -411,9 +378,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("DeliveryAddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DishId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan?>("EstimatedCookingTime")
@@ -440,11 +404,11 @@ namespace ChefNear.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChefId");
+
                     b.HasIndex("ClientId");
 
                     b.HasIndex("DeliveryAddressId");
-
-                    b.HasIndex("DishId");
 
                     b.HasIndex("Status");
 
@@ -719,6 +683,49 @@ namespace ChefNear.Infrastructure.Migrations
                     b.UseTptMappingStrategy();
                 });
 
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ChefId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<decimal>("TotalEarned")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalWithdrawn")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChefId")
+                        .IsUnique();
+
+                    b.ToTable("Wallets", (string)null);
+                });
+
             modelBuilder.Entity("ChefNear.Domain.Entities.WalletTransaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -938,17 +945,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("ChefNear.Domain.Entities.ChefWallet", b =>
-                {
-                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
-                        .WithOne("Wallet")
-                        .HasForeignKey("ChefNear.Domain.Entities.ChefWallet", "ChefId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Chef");
-                });
-
             modelBuilder.Entity("ChefNear.Domain.Entities.Dish", b =>
                 {
                     b.HasOne("ChefNear.Domain.Entities.Category", "Category")
@@ -1036,6 +1032,12 @@ namespace ChefNear.Infrastructure.Migrations
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Order", b =>
                 {
+                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
+                        .WithMany()
+                        .HasForeignKey("ChefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ChefNear.Domain.Entities.Client", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
@@ -1048,9 +1050,7 @@ namespace ChefNear.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ChefNear.Domain.Entities.Dish", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("DishId");
+                    b.Navigation("Chef");
 
                     b.Navigation("Client");
 
@@ -1125,13 +1125,24 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
+                        .WithOne("Wallet")
+                        .HasForeignKey("ChefNear.Domain.Entities.Wallet", "ChefId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Chef");
+                });
+
             modelBuilder.Entity("ChefNear.Domain.Entities.WalletTransaction", b =>
                 {
                     b.HasOne("ChefNear.Domain.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId");
 
-                    b.HasOne("ChefNear.Domain.Entities.ChefWallet", "Wallet")
+                    b.HasOne("ChefNear.Domain.Entities.Wallet", "Wallet")
                         .WithMany("Transactions")
                         .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1237,11 +1248,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Dishes");
                 });
 
-            modelBuilder.Entity("ChefNear.Domain.Entities.ChefWallet", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
             modelBuilder.Entity("ChefNear.Domain.Entities.Dish", b =>
                 {
                     b.Navigation("Images");
@@ -1249,8 +1255,6 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Ingredients");
 
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Orders");
 
                     b.Navigation("Reviews");
                 });
@@ -1273,6 +1277,11 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("FiledDisputes");
 
                     b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Admin", b =>

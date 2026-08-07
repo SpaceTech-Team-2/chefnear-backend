@@ -28,7 +28,6 @@ namespace ChefNear.Domain.Entities
         public ICollection<DishImage> Images { get; set; } = new List<DishImage>();
         public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 
