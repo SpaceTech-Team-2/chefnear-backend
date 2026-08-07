@@ -24,7 +24,7 @@ namespace ChefNear.Application.Features.DishImage.Queries.GetDishImages
                 GetDishImagesQuery request,
                 CancellationToken cancellationToken)
             {
-                var dish = await _unitOfWork.dishes.GetByIdAsync(request.DishId);
+                var dish = await _unitOfWork.Dishes.GetByIdAsync(request.DishId);
 
                 if (dish == null || dish.IsDeleted)
                 {
@@ -32,7 +32,7 @@ namespace ChefNear.Application.Features.DishImage.Queries.GetDishImages
   Error.NotFound("Dish.NotFound", "Dish not found."));
             }
 
-                var images = await _unitOfWork.dishImages.GetAllAsync();
+                var images = await _unitOfWork.DishImages.GetAllAsync();
 
                 var result = images
                     .Where(i => i.DishId == request.DishId)

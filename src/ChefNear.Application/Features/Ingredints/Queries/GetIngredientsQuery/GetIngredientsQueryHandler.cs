@@ -19,7 +19,7 @@ namespace ChefNear.Application.Features.Ingredints.Queries.GetIngredientsQuery
             GetIngredientsQuery request,
             CancellationToken cancellationToken)
         {
-            var ingredients = await _unitOfWork.ingredients.GetAllAsync();
+            var ingredients = await _unitOfWork.Ingredients.GetAllAsync();
 
             var result = ingredients
                 .Where(i => i.DishId == request.DishId)

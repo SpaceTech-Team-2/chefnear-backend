@@ -15,7 +15,7 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
 
     public async Task<Result> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.categories.GetByIdAsync(request.CategoryId);
+        var category = await _unitOfWork.Categories.GetByIdAsync(request.CategoryId);
 
         if (category == null)
         {
@@ -24,9 +24,9 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
             );
         }
 
-        var categories = await _unitOfWork.categories.GetAllAsync();
+        var Categories = await _unitOfWork.Categories.GetAllAsync();
 
-        var nameTaken = categories.Any(c =>
+        var nameTaken = Categories.Any(c =>
             c.Id != request.CategoryId &&
             c.Name == request.Name);
 

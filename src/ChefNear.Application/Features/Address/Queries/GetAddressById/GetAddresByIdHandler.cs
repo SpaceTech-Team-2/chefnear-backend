@@ -18,7 +18,7 @@ namespace ChefNear.Application.Features.Address.Queries.GetAddressById
         }
         public async Task<Result<AddressDto>> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
-            var address = await _unitOfWork.adresses.GetByIdAsync(request.AddressId);
+            var address = await _unitOfWork.Adresses.GetByIdAsync(request.AddressId);
 
             if (address == null)
             {

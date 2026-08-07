@@ -18,7 +18,7 @@ public class GetNearbyDishesQueryHandler
         GetNearbyDishesQuery request,
         CancellationToken cancellationToken)
     {
-        var dishes = await _unitOfWork.dishes.GetNearbyDishesAsync();
+        var dishes = await _unitOfWork.Dishes.GetNearbyDishesAsync();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {

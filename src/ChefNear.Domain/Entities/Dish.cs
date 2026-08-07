@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Common;
+using ChefNear.Domain.Common;
 using HomeChefMarketplace.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace ChefNear.Domain.Entities
     public class Dish : BaseEntity, ISoftDelete
     {
         public string ChefId { get; set; } = string.Empty;
-        public User Chef { get; set; } = null!;
+        public Chef Chef { get; set; } = null!;
 
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
@@ -27,6 +27,7 @@ namespace ChefNear.Domain.Entities
 
         public ICollection<DishImage> Images { get; set; } = new List<DishImage>();
         public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }

@@ -1,0 +1,7 @@
+﻿namespace ChefNear.Application.Features.Orders.Commands.PlaceOrder;
+
+public class PlaceOrderResponse
+{
+    public Guid OrderId { get; set; }
+    public string ClientSecret { get; set; }
+}

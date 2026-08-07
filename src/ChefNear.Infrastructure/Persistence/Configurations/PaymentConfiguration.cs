@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -33,6 +33,13 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
             builder.Property(p => p.ReleasedAt)
                 .IsRequired(false);
 
+            builder.Property(p => p.RefundTransactionId)
+                .HasMaxLength(200)
+                .IsRequired(false);
+
+            builder.Property(p => p.RefundedAt)
+                .IsRequired(false);
+
             builder.HasOne(p => p.Order)
                 .WithOne(o => o.Payment)
                 .HasForeignKey<Payment>(p => p.OrderId)
@@ -42,7 +49,11 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .IsUnique();
 
             builder.HasIndex(p => p.Status);
+
             builder.HasIndex(p => p.GatewayTransactionId)
+                .IsUnique();
+
+            builder.HasIndex(p => p.IdempotencyKey)
                 .IsUnique();
         }
     }

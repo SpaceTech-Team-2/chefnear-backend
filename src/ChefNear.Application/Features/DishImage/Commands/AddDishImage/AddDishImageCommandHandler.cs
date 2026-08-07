@@ -23,7 +23,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
             AddDishImageCommand request,
             CancellationToken cancellationToken)
         {
-            var dish = await _unitOfWork.dishes.GetByIdAsync(request.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(request.DishId);
 
             if (dish == null || dish.IsDeleted)
             {
@@ -45,7 +45,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
                 cancellationToken);
 
 
-            var images = await _unitOfWork.dishImages.GetAllAsync();
+            var images = await _unitOfWork.DishImages.GetAllAsync();
 
             if (request.IsPrimary)
             {
@@ -64,7 +64,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
                 DisplayOrder = images.Count(i => i.DishId == request.DishId)
             };
 
-            await _unitOfWork.dishImages.AddAsync(image);
+            await _unitOfWork.DishImages.AddAsync(image);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

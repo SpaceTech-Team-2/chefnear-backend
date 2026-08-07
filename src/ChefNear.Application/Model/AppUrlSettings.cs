@@ -10,6 +10,6 @@ namespace ChefNear.Application.Model
         public string ApiBaseUrl { get; set; } = "https://localhost:5001";
         public string ResetPasswordPath { get; set; } = "auth/reset-password";
         public string ConfirmEmailPath { get; set; } = string.Empty;
-
+        public string PaymentResultUrl { get; set; } = string.Empty;
     }
 }

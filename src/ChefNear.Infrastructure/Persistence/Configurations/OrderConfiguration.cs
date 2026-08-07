@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,10 +13,6 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
 
             builder.HasKey(o => o.Id);
 
-            builder.Property(o => o.Quantity)
-                .HasDefaultValue(1)
-                .IsRequired();
-
             builder.Property(o => o.Notes)
                 .HasMaxLength(500)
                 .IsRequired(false);
@@ -28,7 +24,10 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasMaxLength(500)
                 .IsRequired(false);
 
-            // العلاقات
+            builder.Property(o => o.CancellationReasonType)
+                .IsRequired(false);
+
+            // Relationships
 
             // Order (M) → User (1) (Client)
             builder.HasOne(o => o.Client)
@@ -36,11 +35,11 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasForeignKey(o => o.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Order (M) → Dish (1)
-            builder.HasOne(o => o.Dish)
-                .WithMany(d => d.Orders)
-                .HasForeignKey(o => o.DishId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Order (1) → OrderItem (M)
+            builder.HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Order (M) → Address (1)
             builder.HasOne(o => o.DeliveryAddress)
@@ -71,7 +70,6 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(o => o.ClientId);
-            builder.HasIndex(o => o.DishId);
             builder.HasIndex(o => o.DeliveryAddressId);
             builder.HasIndex(o => o.Status);
         }

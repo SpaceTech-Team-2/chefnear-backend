@@ -15,7 +15,7 @@ public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand,
 
     public async Task<Result> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
     {
-        var address = await _unitOfWork.adresses.GetByIdAsync(request.AddressId);
+        var address = await _unitOfWork.Adresses.GetByIdAsync(request.AddressId);
 
         if (address == null)
         {
@@ -23,12 +23,12 @@ public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand,
          
         }
 
-        if (address.UserId != request.UserId.ToString())
+        if (address.ClientId != request.UserId.ToString())
         {
             return Result.Failure( Error.Forbidden("Address.Forbidden", "You cannot delete this address."));
         }
 
-        await _unitOfWork.adresses.DeleteAsync(address);
+        await _unitOfWork.Adresses.DeleteAsync(address);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -6,5 +6,8 @@
     <Project Path="src/ChefNear.Infrastructure/ChefNear.Infrastructure.csproj" />
     <Project Path="src/ChefNear.Shared/ChefNear.Shared.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/ChefNear.Application.Tests/ChefNear.Application.Tests.csproj" Id="7c11dbf5-5dbd-47eb-b129-64df49f2dfd2" />
+    <Project Path="tests/ChefNear.Infrastructure.Tests/ChefNear.Infrastructure.Tests.csproj" Id="4a8ef9b2-9b48-49e0-b96d-38491dcbb487" />
+  </Folder>
 </Solution>

@@ -16,7 +16,7 @@ public class DeleteCategoryCommandHandler
 
     public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.categories.GetByIdAsync(request.CategoryId);
+        var category = await _unitOfWork.Categories.GetByIdAsync(request.CategoryId);
 
         if (category == null)
         {
@@ -25,7 +25,7 @@ public class DeleteCategoryCommandHandler
             );
         }
 
-        var dishes = await _unitOfWork.dishes.GetAllAsync();
+        var dishes = await _unitOfWork.Dishes.GetAllAsync();
 
         var inUse = dishes.Any(d => d.CategoryId == request.CategoryId && !d.IsDeleted);
 
@@ -39,7 +39,7 @@ public class DeleteCategoryCommandHandler
             );
         }
 
-        await _unitOfWork.categories.DeleteAsync(category);
+        await _unitOfWork.Categories.DeleteAsync(category);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -23,7 +23,7 @@ namespace ChefNear.Application.Features.Ingredints.AddIngredient
 
         public async Task<Result<Guid>> Handle(AddIngredientCommand request, CancellationToken cancellationToken)
         {
-            var dish = await _unitOfWork.dishes.GetByIdAsync(request.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(request.DishId);
 
             if (dish == null || dish.IsDeleted)
             {
@@ -42,7 +42,7 @@ namespace ChefNear.Application.Features.Ingredints.AddIngredient
                 Quantity = request.Quantity
             };
 
-            await _unitOfWork.ingredients.AddAsync(ingredient);
+            await _unitOfWork.Ingredients.AddAsync(ingredient);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success(ingredient.Id);

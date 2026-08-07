@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Common;
+using ChefNear.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +15,7 @@ namespace ChefNear.Domain.Entities
         public Dish Dish { get; set; } = null!;
 
         public string ClientId { get; set; } = string.Empty;  
-        public User Client { get; set; } = null!;
+        public Client Client { get; set; } = null!;
 
         public int Rating { get; set; }           
         public string? Comment { get; set; }

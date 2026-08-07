@@ -1,4 +1,4 @@
-﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Entities;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -62,10 +62,6 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasForeignKey(i => i.DishId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(d => d.Orders)
-                .WithOne(o => o.Dish)
-                .HasForeignKey(o => o.DishId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(d => d.Reviews)
                 .WithOne(r => r.Dish)

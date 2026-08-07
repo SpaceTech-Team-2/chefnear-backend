@@ -1,3 +1,8 @@
+#nullable enable
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Infrastructure.Persistence;
     using Microsoft.EntityFrameworkCore;
     using System.Linq.Expressions;
     using ChefNear.Application.Common.Persistence.Interfaces;
@@ -48,9 +53,22 @@
             return Task.CompletedTask;
         }
 
-        public virtual Task DeleteAsync(T entity)
-        {
-            _dbContext.Set<T>().Remove(entity);
-            return Task.CompletedTask;
-        }
+    public virtual Task DeleteAsync(T entity)
+    {
+        _dbContext.Set<T>().Remove(entity);
+        return Task.CompletedTask;
     }
+
+    public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+    {
+        var query = _dbContext.Set<T>().AsQueryable();
+
+        if (includes != null && includes.Any())
+        {
+            foreach (var include in includes)
+                query = query.Include(include);
+        }
+
+        return await query.FirstOrDefaultAsync(predicate);
+    }
+}

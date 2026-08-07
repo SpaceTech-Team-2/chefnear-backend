@@ -33,6 +33,9 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -60,15 +63,11 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDefault");
+                    b.HasIndex("ClientId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("IsDefault");
 
                     b.ToTable("Addresses", (string)null);
                 });
@@ -148,10 +147,11 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Available");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -238,13 +238,15 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<string>("ResolvedByAdminId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Open");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -314,13 +316,15 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<DateTime?>("SentAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Pending");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -350,8 +354,15 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("CancelledBy")
-                        .HasColumnType("int");
+                    b.Property<string>("CancellationReasonType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CancelledBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChefId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClientId")
                         .IsRequired()
@@ -360,30 +371,40 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("DeliveryAddressId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid?>("DishId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan?>("EstimatedCookingTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("EstimatedDeliveryTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Pending");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChefId");
 
                     b.HasIndex("ClientId");
 
@@ -394,6 +415,24 @@ namespace ChefNear.Infrastructure.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.OrderItem", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DishId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId", "DishId");
+
+                    b.HasIndex("DishId");
+
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Payment", b =>
@@ -409,6 +448,9 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GatewayTransactionId")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -416,19 +458,37 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<DateTime?>("HeldAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaymentGatewayOrderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefundTransactionId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("RefundedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("ReleasedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Pending");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -438,6 +498,9 @@ namespace ChefNear.Infrastructure.Migrations
                     b.HasIndex("GatewayTransactionId")
                         .IsUnique()
                         .HasFilter("[GatewayTransactionId] IS NOT NULL");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique();
 
                     b.HasIndex("OrderId")
                         .IsUnique();
@@ -535,10 +598,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
                     b.Property<string>("DisplayName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -550,8 +609,13 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("KitchenAddressId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -580,18 +644,16 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("ReliabilityScore")
-                        .HasPrecision(3, 2)
-                        .HasColumnType("float(3)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -606,8 +668,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
-                    b.HasIndex("KitchenAddressId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -621,6 +681,93 @@ namespace ChefNear.Infrastructure.Migrations
                         .HasFilter("[PhoneNumber] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ChefId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<decimal>("TotalEarned")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalWithdrawn")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChefId")
+                        .IsUnique();
+
+                    b.ToTable("Wallets", (string)null);
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.WalletTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("WalletId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("WalletTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -756,15 +903,48 @@ namespace ChefNear.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ChefNear.Domain.Entities.Admin", b =>
+                {
+                    b.HasBaseType("ChefNear.Domain.Entities.User");
+
+                    b.ToTable("Admins", (string)null);
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Chef", b =>
+                {
+                    b.HasBaseType("ChefNear.Domain.Entities.User");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("KitchenAddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("ReliabilityScore")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("float(3)");
+
+                    b.HasIndex("KitchenAddressId");
+
+                    b.ToTable("Chefs", (string)null);
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Client", b =>
+                {
+                    b.HasBaseType("ChefNear.Domain.Entities.User");
+
+                    b.ToTable("Clients", (string)null);
+                });
+
             modelBuilder.Entity("ChefNear.Domain.Entities.Address", b =>
                 {
-                    b.HasOne("ChefNear.Domain.Entities.User", "User")
+                    b.HasOne("ChefNear.Domain.Entities.Client", "Client")
                         .WithMany("Addresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("User");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Dish", b =>
@@ -775,7 +955,7 @@ namespace ChefNear.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ChefNear.Domain.Entities.User", "Chef")
+                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
                         .WithMany("Dishes")
                         .HasForeignKey("ChefId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -811,7 +991,7 @@ namespace ChefNear.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChefNear.Domain.Entities.User", "ResolvedByAdmin")
+                    b.HasOne("ChefNear.Domain.Entities.Admin", "ResolvedByAdmin")
                         .WithMany("ResolvedDisputes")
                         .HasForeignKey("ResolvedByAdminId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -854,7 +1034,13 @@ namespace ChefNear.Infrastructure.Migrations
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("ChefNear.Domain.Entities.User", "Client")
+                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
+                        .WithMany()
+                        .HasForeignKey("ChefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChefNear.Domain.Entities.Client", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -866,17 +1052,34 @@ namespace ChefNear.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ChefNear.Domain.Entities.Dish", "Dish")
+                    b.HasOne("ChefNear.Domain.Entities.Dish", null)
                         .WithMany("Orders")
-                        .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("DishId");
+
+                    b.Navigation("Chef");
 
                     b.Navigation("Client");
 
                     b.Navigation("DeliveryAddress");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.OrderItem", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.Dish", "Dish")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("DishId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ChefNear.Domain.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Dish");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Payment", b =>
@@ -903,7 +1106,7 @@ namespace ChefNear.Infrastructure.Migrations
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("ChefNear.Domain.Entities.User", "Client")
+                    b.HasOne("ChefNear.Domain.Entities.Client", "Client")
                         .WithMany("Reviews")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -928,14 +1131,32 @@ namespace ChefNear.Infrastructure.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("ChefNear.Domain.Entities.User", b =>
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
                 {
-                    b.HasOne("ChefNear.Domain.Entities.Address", "KitchenAddress")
-                        .WithMany()
-                        .HasForeignKey("KitchenAddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("ChefNear.Domain.Entities.Chef", "Chef")
+                        .WithOne("Wallet")
+                        .HasForeignKey("ChefNear.Domain.Entities.Wallet", "ChefId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("KitchenAddress");
+                    b.Navigation("Chef");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.WalletTransaction", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("ChefNear.Domain.Entities.Wallet", "Wallet")
+                        .WithMany("Transactions")
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -989,6 +1210,40 @@ namespace ChefNear.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ChefNear.Domain.Entities.Admin", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("ChefNear.Domain.Entities.Admin", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Chef", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("ChefNear.Domain.Entities.Chef", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChefNear.Domain.Entities.Address", "KitchenAddress")
+                        .WithMany()
+                        .HasForeignKey("KitchenAddressId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("KitchenAddress");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Client", b =>
+                {
+                    b.HasOne("ChefNear.Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("ChefNear.Domain.Entities.Client", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ChefNear.Domain.Entities.Address", b =>
                 {
                     b.Navigation("Orders");
@@ -1005,6 +1260,8 @@ namespace ChefNear.Infrastructure.Migrations
 
                     b.Navigation("Ingredients");
 
+                    b.Navigation("OrderItems");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
@@ -1016,6 +1273,8 @@ namespace ChefNear.Infrastructure.Migrations
 
                     b.Navigation("Notifications");
 
+                    b.Navigation("OrderItems");
+
                     b.Navigation("Payment");
 
                     b.Navigation("Review");
@@ -1023,17 +1282,33 @@ namespace ChefNear.Infrastructure.Migrations
 
             modelBuilder.Entity("ChefNear.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Addresses");
-
-                    b.Navigation("Dishes");
-
                     b.Navigation("FiledDisputes");
 
                     b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Wallet", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Admin", b =>
+                {
+                    b.Navigation("ResolvedDisputes");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Chef", b =>
+                {
+                    b.Navigation("Dishes");
+
+                    b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("ChefNear.Domain.Entities.Client", b =>
+                {
+                    b.Navigation("Addresses");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("ResolvedDisputes");
 
                     b.Navigation("Reviews");
                 });

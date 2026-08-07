@@ -18,9 +18,9 @@ public class CreateCategoryCommandHandler
         CreateCategoryCommand request,
         CancellationToken cancellationToken)
     {
-        var categories = await _unitOfWork.categories.GetAllAsync();
+        var Categories = await _unitOfWork.Categories.GetAllAsync();
 
-        var categoryExists = categories.Any(c => c.Name == request.Name);
+        var categoryExists = Categories.Any(c => c.Name == request.Name);
 
         if (categoryExists)
         {
@@ -36,7 +36,7 @@ public class CreateCategoryCommandHandler
             Description = request.Description
         };
 
-        await _unitOfWork.categories.AddAsync(category);
+        await _unitOfWork.Categories.AddAsync(category);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

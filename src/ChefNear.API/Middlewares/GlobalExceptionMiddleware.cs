@@ -1,7 +1,8 @@
-using System.Net;
-using System.Text.Json;
+using ChefNear.Domain.Exceptions;
 using ChefNear.Shared.Responses;
 using FluentValidation;
+using System.Net;
+using System.Text.Json;
 
 namespace ChefNear.API.Middlewares;
 
@@ -64,6 +65,12 @@ public class GlobalExceptionMiddleware
             case ArgumentException or InvalidOperationException:
                 statusCode = (int)HttpStatusCode.BadRequest;
                 message = exception.Message;
+                if (!string.IsNullOrEmpty(exception.Message)) errors.Add(exception.Message);
+                break;
+
+            case PaymentGatewayException:
+                statusCode = ((PaymentGatewayException)exception).StatusCode;
+                message = "Failed to process payment.";
                 if (!string.IsNullOrEmpty(exception.Message)) errors.Add(exception.Message);
                 break;
 

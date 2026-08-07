@@ -16,7 +16,7 @@ namespace ChefNear.Application.Features.Ingredints.Commands.UpdateIngredient
 
         public async Task<Result> Handle(UpdateIngredientCommand request, CancellationToken cancellationToken)
         {
-            var ingredient = await _unitOfWork.ingredients.GetByIdAsync(request.IngredientId);
+            var ingredient = await _unitOfWork.Ingredients.GetByIdAsync(request.IngredientId);
 
             if (ingredient == null)
             {
@@ -24,7 +24,7 @@ namespace ChefNear.Application.Features.Ingredints.Commands.UpdateIngredient
     Error.NotFound("Ingredient.NotFound", "Ingredient not found."));
             }
 
-            var dish = await _unitOfWork.dishes.GetByIdAsync(ingredient.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(ingredient.DishId);
 
             if (dish == null)
             {

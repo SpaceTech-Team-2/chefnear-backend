@@ -16,7 +16,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.SetPrimaryDishImage
 
         public async Task<Result> Handle(SetPrimaryDishImageCommand request, CancellationToken cancellationToken)
         {
-            var image = await _unitOfWork.dishImages.GetByIdAsync(request.ImageId);
+            var image = await _unitOfWork.DishImages.GetByIdAsync(request.ImageId);
 
             if (image == null)
             {
@@ -24,7 +24,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.SetPrimaryDishImage
                     Error.NotFound("DishImage.NotFound", "Image not found."));
             }
 
-            var dish = await _unitOfWork.dishes.GetByIdAsync(image.DishId);
+            var dish = await _unitOfWork.Dishes.GetByIdAsync(image.DishId);
 
             if (dish == null)
             {
@@ -40,7 +40,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.SetPrimaryDishImage
                         "Only the owner can update this dish's images."));
             }
 
-            var images = await _unitOfWork.dishImages.GetAllAsync();
+            var images = await _unitOfWork.DishImages.GetAllAsync();
 
             foreach (var img in images.Where(i => i.DishId == image.DishId && i.IsPrimary))
             {

@@ -26,6 +26,8 @@ namespace ChefNear.API.Extensions
                 {
                     [new OpenApiSecuritySchemeReference("Bearer", document)] = []
                 });
+
+                options.EnableAnnotations();
             });
 
             return services;

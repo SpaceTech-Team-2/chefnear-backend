@@ -57,7 +57,7 @@ public class CreateDishCommandHandler : IRequestHandler<CreateDishCommand, Resul
             });
         }
 
-        await _unitOfWork.dishes.AddAsync(dish);
+        await _unitOfWork.Dishes.AddAsync(dish);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
