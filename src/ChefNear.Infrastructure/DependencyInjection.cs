@@ -28,7 +28,9 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<ChefNearDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(connectionString)
+                   .EnableSensitiveDataLogging());
+                   
 
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.Configure<AppUrlSettings>(configuration.GetSection("AppUrlSettings"));

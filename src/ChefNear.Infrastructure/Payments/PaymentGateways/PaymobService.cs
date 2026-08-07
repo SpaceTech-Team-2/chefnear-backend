@@ -49,7 +49,7 @@ internal class PaymobService(
             items = orderSummary.Items.Select(item => new
             {
                 name = item.DishName,
-                amount = (int)Math.Round(item.UnitPrice * item.Quantity * 100),
+                amount = item.UnitPrice * 100,
                 description = "Home chef order item",
                 quantity = item.Quantity
             }).ToArray(),
