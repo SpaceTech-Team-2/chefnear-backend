@@ -119,6 +119,7 @@ internal class PaymobService(
                 result.Id
             );
 
+            result.PublicKey = paymobSettings.PublicKey;
             return result;
         }
         catch (HttpRequestException ex)

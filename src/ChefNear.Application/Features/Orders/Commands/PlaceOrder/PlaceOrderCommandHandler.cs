@@ -128,6 +128,7 @@ public class PlaceOrderCommandHandler(
             {
                 OrderId = order.Id,
                 ClientSecret = paymentIntent.ClientSecret,
+                PublikKey = paymentIntent.PublicKey
             };
 
             return Result.Success(response);

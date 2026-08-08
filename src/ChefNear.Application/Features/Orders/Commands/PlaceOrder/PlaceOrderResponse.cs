@@ -3,5 +3,6 @@
 public class PlaceOrderResponse
 {
     public Guid OrderId { get; set; }
-    public string ClientSecret { get; set; }
+    public string ClientSecret { get; set; } = string.Empty;
+    public string PublikKey { get; set; } = string.Empty;
 }
