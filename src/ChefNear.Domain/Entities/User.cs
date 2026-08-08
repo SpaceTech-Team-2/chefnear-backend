@@ -11,7 +11,7 @@ namespace ChefNear.Domain.Entities
 
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string? DisplayName { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
         public string? PhotoUrl { get; set; }
 
         // ---- Navigation ----

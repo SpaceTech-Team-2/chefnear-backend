@@ -58,5 +58,13 @@ namespace ChefNear.Domain.Entities
                 Description = description ?? "Withdrawal from wallet"
             });
         }
+
+        public static Wallet Initialize(string chefId) => new Wallet
+        {
+            ChefId = chefId,
+            Balance = 0,
+            TotalEarned = 0,
+            TotalWithdrawn = 0,
+        };
     }
 }
