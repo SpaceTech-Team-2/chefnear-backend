@@ -4,10 +4,11 @@ using MediatR;
 
 namespace ChefNear.Application.Features.Orders.Commands.MarkAsReady;
 
-public record MarkOrderAsReadyRequest(TimeSpan? EstimatedDeliveryTime);
+public record MarkOrderAsReadyRequest(TimeSpan? EstimatedDeliveryTime, decimal DeliveryFee = 0);
 
 public record MarkOrderAsReadyCommand(
     Guid OrderId,
     CurrentUser Chef,
-    TimeSpan? EstimatedDeliveryTime
+    TimeSpan? EstimatedDeliveryTime,
+    decimal DeliveryFee = 0
 ) : IRequest<Result>;

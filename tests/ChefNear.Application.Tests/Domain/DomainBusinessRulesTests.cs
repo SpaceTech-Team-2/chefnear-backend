@@ -58,11 +58,12 @@ namespace ChefNear.Application.Tests.Domain
             var deliveryTime = TimeSpan.FromMinutes(30);
 
             // Act
-            order.MarkAsReady(deliveryTime);
+            order.MarkAsReady(30, deliveryTime);
 
             // Assert
             order.Status.Should().Be(OrderStatus.ReadyForDelivery);
             order.EstimatedDeliveryTime.Should().Be(deliveryTime);
+            order.DeliveryFee.Should().Be(30);
         }
 
         [Fact]

@@ -19,7 +19,10 @@ namespace ChefNear.Domain.Entities
 
         public string? Notes { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-  
+        public OrderFulfillmentType OrderFulfillmentType { get; set; } = OrderFulfillmentType.Delivery;
+
+        public decimal? DeliveryFee { get; private set; }
+
         public CancelledBy? CancelledBy { get; private set; }
         public CancellationReasonType? CancellationReasonType { get; private set; }
         public string? CancellationReason { get; private set; }
@@ -60,11 +63,14 @@ namespace ChefNear.Domain.Entities
                 EstimatedCookingTime = estimatedCookingTime.Value;
         }
 
-        public void MarkAsReady(TimeSpan? estimatedDeliveryTime = null)
+        public void MarkAsReady(decimal? deliveryFee = null,TimeSpan? estimatedDeliveryTime = null)
         {
             Status = OrderStatus.ReadyForDelivery;
             if (estimatedDeliveryTime.HasValue)
                 EstimatedDeliveryTime = estimatedDeliveryTime.Value;
+
+            if(OrderFulfillmentType == OrderFulfillmentType.Delivery)
+                DeliveryFee = deliveryFee;
         }
 
         public void MarkAsDelivered()

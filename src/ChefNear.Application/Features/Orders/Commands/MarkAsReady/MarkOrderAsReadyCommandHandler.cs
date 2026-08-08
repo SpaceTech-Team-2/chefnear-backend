@@ -20,7 +20,7 @@ public class MarkOrderAsReadyCommandHandler(IUnitOfWork unitOfWork) : IRequestHa
         if (order.Status != OrderStatus.Preparing)
             return Result.Failure(DomainErrors.Order.OrderMustBePreparing);
 
-        order.MarkAsReady(request.EstimatedDeliveryTime);
+        order.MarkAsReady(request.DeliveryFee, request.EstimatedDeliveryTime);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // TODO: Publish an event or notification that the order is ready for delivery

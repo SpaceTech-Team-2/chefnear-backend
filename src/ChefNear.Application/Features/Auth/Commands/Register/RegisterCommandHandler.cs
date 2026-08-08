@@ -35,8 +35,12 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                 return DomainErrors.Auth.PasswordMismatch;
 
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
+
             if (existingUser != null)
                 return DomainErrors.Auth.EmailAlreadyExists;
+
+            if (request.Role == UserRole.Admin)
+                return Error.Forbidden("Auth.RegisterAdmin", "Cann't register as admin role");
 
             User user = request.Role switch
             {
@@ -47,6 +51,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                     Email = request.Email,
                     PhoneNumber = request.PhoneNumber,
                     PhotoUrl = null,
+                    DisplayName = request.DisplayName,
                     Description = request.Description,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
@@ -58,18 +63,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                     Id = Guid.NewGuid().ToString(),
                     UserName = request.Email,
                     Email = request.Email,
-                    PhoneNumber = request.PhoneNumber,
-                    PhotoUrl = null,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Role = request.Role,
-                    Status = UserStatus.Active
-                },
-                UserRole.Admin => new Admin
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserName = request.Email,
-                    Email = request.Email,
+                    DisplayName = request.DisplayName,
                     PhoneNumber = request.PhoneNumber,
                     PhotoUrl = null,
                     FirstName = request.FirstName,
@@ -82,6 +76,7 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                     Id = Guid.NewGuid().ToString(),
                     UserName = request.Email,
                     Email = request.Email,
+                    DisplayName = request.DisplayName,
                     PhoneNumber = request.PhoneNumber,
                     PhotoUrl = null,
                     FirstName = request.FirstName,
@@ -119,14 +114,17 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
                     CreatedAt = DateTime.UtcNow,
                 };
 
-                await _unitOfWork.Adresses.AddAsync(address);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (user is Chef chefUser)
                 {
                     chefUser.KitchenAddressId = address.Id;
-                    await _userManager.UpdateAsync(chefUser);
+                    
+                    var wallet = Wallet.Initialize(chefUser.Id);
+                    await _unitOfWork.Wallets.AddAsync(wallet);
                 }
+
+                await _unitOfWork.Adresses.AddAsync(address);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
 
             // Enqueue confirmation email as a background job

@@ -15,7 +15,8 @@ public record PlaceOrderCommand(
     string Notes,
     Guid? DeliveryAddressId,
     AddressDto? DeliveryAddress,
-    PaymentGateway PaymentGateway
+    PaymentGateway PaymentGateway,
+    OrderFulfillmentType OrderFulfillmentType
 ) : IRequest<Result<PlaceOrderResponse>>
 {
     [JsonIgnore]

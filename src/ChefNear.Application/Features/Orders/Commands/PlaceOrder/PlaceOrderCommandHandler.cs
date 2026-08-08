@@ -82,7 +82,8 @@ public class PlaceOrderCommandHandler(
             Status = OrderStatus.Pending,
             Payment = payment,
             OrderItems = orderItems,
-            ChefId = chefIds.First()
+            ChefId = chefIds.First(),
+            OrderFulfillmentType = request.OrderFulfillmentType
         };
 
         if (request.DeliveryAddressId == null)
@@ -128,6 +129,7 @@ public class PlaceOrderCommandHandler(
             {
                 OrderId = order.Id,
                 ClientSecret = paymentIntent.ClientSecret,
+                PublikKey = paymentIntent.PublicKey
             };
 
             return Result.Success(response);

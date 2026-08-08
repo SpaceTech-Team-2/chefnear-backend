@@ -119,6 +119,7 @@ internal class PaymobService(
                 result.Id
             );
 
+            result.PublicKey = paymobSettings.PublicKey;
             return result;
         }
         catch (HttpRequestException ex)
@@ -173,6 +174,11 @@ internal class PaymobService(
 
             throw;
         }
+    }
+
+    public Task<string> Payout(decimal amount, string chennel)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<string> RefundAsync(string transactionId, decimal amount)
