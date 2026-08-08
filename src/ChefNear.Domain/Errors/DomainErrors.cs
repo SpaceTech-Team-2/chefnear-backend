@@ -99,4 +99,10 @@ public static class DomainErrors
         public static readonly Error OrderMustBeReady =
             Error.Validation("Order.OrderMustBeReady", "The order must be in the Ready status to perform this operation.");
     }
+
+    public static class Wallet
+    {   
+        public static readonly Error WalletNotFound =
+            Error.NotFound("Wallet.WalletNotFound", "Wallet not found.");
+    }
 }

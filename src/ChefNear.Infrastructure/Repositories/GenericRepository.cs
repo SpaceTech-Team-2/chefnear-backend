@@ -3,14 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Infrastructure.Persistence;
-    using Microsoft.EntityFrameworkCore;
-    using System.Linq.Expressions;
-    using ChefNear.Application.Common.Persistence.Interfaces;
-    using ChefNear.Domain.Common;
-    using ChefNear.Infrastructure.Persistence;
-    using Microsoft.EntityFrameworkCore;
 
-    namespace ChefNear.Infrastructure.Repositories;
+namespace ChefNear.Infrastructure.Repositories;
 
 
     public class GenericRepository<T> : IGenericRepository<T> where T : class

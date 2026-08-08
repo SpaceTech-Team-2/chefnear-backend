@@ -39,7 +39,7 @@ namespace ChefNear.Domain.Entities
             });
         }
 
-        public void Withdraw(decimal amount, string? description = null)
+        public WalletTransaction Withdraw(decimal amount, string? description = null)
         {
             if (amount <= 0)
                 throw new ArgumentException("Withdrawal amount must be greater than zero.", nameof(amount));
@@ -50,13 +50,16 @@ namespace ChefNear.Domain.Entities
             Balance -= amount;
             TotalWithdrawn += amount;
 
-            Transactions.Add(new WalletTransaction
+            var transaction = new WalletTransaction
             {
                 Amount = amount,
                 AmountAfter = Balance,
                 Type = WalletTransactionType.Withdrawal,
                 Description = description ?? "Withdrawal from wallet"
-            });
+            };
+
+            Transactions.Add(transaction);
+            return transaction;
         }
 
         public static Wallet Initialize(string chefId) => new Wallet
