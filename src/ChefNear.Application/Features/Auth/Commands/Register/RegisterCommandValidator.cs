@@ -24,6 +24,11 @@ namespace ChefNear.Application.Features.Auth.Commands.Register
             RuleFor(x => x.ConfirmPassword)
                 .Equal(x => x.Password).WithMessage("Passwords do not match");
 
+            // DisplayName 
+            RuleFor(x => x.DisplayName)
+                .NotEmpty().WithMessage("DisplayName is required")
+                .NotNull().WithMessage("DisplayName is required");
+
             // Display Name
             RuleFor(x => x.FirstName)
                 .MaximumLength(100).WithMessage("First name cannot exceed 100 characters")

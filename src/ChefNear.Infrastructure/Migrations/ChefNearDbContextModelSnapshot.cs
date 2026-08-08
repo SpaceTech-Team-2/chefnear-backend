@@ -535,7 +535,7 @@ namespace ChefNear.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("ChefNear.Domain.Entities.Review", b =>

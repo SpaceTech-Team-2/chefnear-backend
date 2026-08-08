@@ -17,9 +17,10 @@ public class RegisterCommand : IRequest<Result<RegisterResponse>>
     public string LastName { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
 
-   // public IFormFile? Photo { get; set; }
+    // public IFormFile? Photo { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
 
-    public string? Description { get; set; }
+    public string Description { get; set; } = default!;
 
     public UserRole Role { get; set; } = UserRole.Client;
 
