@@ -176,6 +176,11 @@ internal class PaymobService(
         }
     }
 
+    public Task<string> Payout(decimal amount, string chennel)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<string> RefundAsync(string transactionId, decimal amount)
     {
         using var client = httpClientFactory.CreateClient();
