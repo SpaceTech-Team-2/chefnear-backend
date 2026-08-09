@@ -1,6 +1,7 @@
 ﻿using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Domain.Enums;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace ChefNear.Application.Features.Dishes.Commands;
 
@@ -8,7 +9,9 @@ public class UpdateDishCommand : IRequest<Result>
 {
     public Guid DishId { get; set; }
 
-    public string ChefId { get; set; } = string.Empty;
+    [JsonIgnore]
+
+    public Guid ChefId { get; set; } 
 
     public Guid CategoryId { get; set; }
 

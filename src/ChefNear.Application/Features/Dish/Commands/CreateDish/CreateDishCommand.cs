@@ -1,11 +1,14 @@
 ﻿using ChefNear.Application.Features.Dish.DTOs;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace ChefNear.Application.Features.Dishes.Commands;
 
 public class CreateDishCommand : IRequest<Result<Guid>>
 {
+    [JsonIgnore]
+
     public Guid ChefId { get; set; }
     public Guid CategoryId { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Features.Dish.DTOs;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text;
 namespace ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery
 {
     public class GetDishByIdQueryHandler
-      : IRequestHandler<GetDishByIdQuery, DishDetailDto?>
+      : IRequestHandler<GetDishByIdQuery, Result<DishDetailDto?>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -17,7 +18,7 @@ namespace ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<DishDetailDto?> Handle(
+        public async Task<Result<DishDetailDto?>> Handle(
             GetDishByIdQuery request,
             CancellationToken cancellationToken)
         {
@@ -26,7 +27,7 @@ namespace ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery
             if (dish == null || dish.IsDeleted)
                 return null;
 
-            return new DishDetailDto
+            return Result.Success<DishDetailDto?>(new DishDetailDto
             {
                 Id = dish.Id,
                 Name = dish.Name,
@@ -58,7 +59,7 @@ namespace ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery
                         Quantity = i.Quantity
                     })
                     .ToList()
-            };
+            });
         }
     }
 }
