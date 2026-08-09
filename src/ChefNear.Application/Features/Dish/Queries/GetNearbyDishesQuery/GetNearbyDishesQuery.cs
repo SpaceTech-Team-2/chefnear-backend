@@ -1,9 +1,10 @@
 ﻿using ChefNear.Application.Features.Dish.DTOs;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 
 namespace ChefNear.Application.Features.Dishes.Queries.GetNearbyDishesQuery;
 
-public class GetNearbyDishesQuery : IRequest<List<DishSummaryDto>>
+public class GetNearbyDishesQuery : IRequest<Result<List<DishSummaryDto>>>
 {
     public string? Search { get; set; }
 

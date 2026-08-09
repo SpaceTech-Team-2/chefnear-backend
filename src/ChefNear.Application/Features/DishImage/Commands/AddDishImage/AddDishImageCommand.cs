@@ -1,6 +1,7 @@
 ﻿using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
 
 namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
 {
@@ -8,6 +9,7 @@ namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
     {
         public Guid DishId { get; set; }
 
+        [JsonIgnore]
         public string ChefId { get; set; } = string.Empty;
 
         public IFormFile File { get; set; } = null!;

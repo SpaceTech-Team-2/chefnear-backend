@@ -1,11 +1,12 @@
 ﻿using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Features.Category.DTOs;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 
 namespace ChefNear.Application.Features.Categories.Queries;
 
 public class GetCategoriesQueryHandler
-    : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
+    : IRequestHandler<GetCategoriesQuery, Result<List<CategoryDto>>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,20 +15,22 @@ public class GetCategoriesQueryHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<CategoryDto>> Handle(
+    public async Task<Result<List<CategoryDto>>> Handle(
         GetCategoriesQuery request,
         CancellationToken cancellationToken)
     {
         var Categories = await _unitOfWork.Categories.GetAllAsync();
 
-        return Categories
-            .OrderBy(c => c.Name)
-            .Select(c => new CategoryDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description
-            })
-            .ToList();
+        return Result.Success(
+    Categories
+        .OrderBy(c => c.Name)
+        .Select(c => new CategoryDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            Description = c.Description
+        })
+        .ToList()
+);
     }
 }

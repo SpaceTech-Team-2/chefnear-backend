@@ -24,7 +24,7 @@ public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Resul
             );
         }
 
-        if (dish.ChefId != request.ChefId)
+        if (dish.ChefId != request.ChefId.ToString())
         {
             return Result.Failure(
                 Error.Forbidden("Dish.Forbidden", "Only the owning chef can update this dish.")
