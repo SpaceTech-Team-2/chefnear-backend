@@ -112,8 +112,6 @@ try
                     $"ChefNear API {description.GroupName.ToUpperInvariant()}");
             }
         });
-
-        app.MapGet("/", () => Results.Redirect("/swagger"));
     }
 
     app.UseHttpsRedirection();

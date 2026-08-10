@@ -11,6 +11,7 @@ public class WebhooksController : BaseApiController
 {
     [HttpPost("paymob")]
     [VerifyHmac]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> PaymobWebhook([FromBody] PaymobWebhook paymobWebhook)
     {
         var command = new ProcessPaymobWebhookCommand(paymobWebhook);
