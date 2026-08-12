@@ -1,11 +1,11 @@
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 
-namespace ChefNear.Application.Features.Auth.Commands.Logout
-{
-    public class LogoutCommand : IRequest<Result<LogoutResponse>>
-    {
-        public string UserId { get; set; } = string.Empty;
-        public string? RefreshToken { get; set; }
-    }
-}
+namespace ChefNear.Application.Features.Auth.Commands.Logout;
+
+public record LogoutRequest(string? RefreshToken);
+
+public record LogoutCommand(
+    string UserId,
+    string? RefreshToken
+) : IRequest<Result<LogoutResponse>>;

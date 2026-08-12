@@ -1,19 +1,18 @@
-﻿using ChefNear.Shared.ResultPattern;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json.Serialization;
 
-namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage
-{
-    public class AddDishImageCommand : IRequest<Result<Guid>>
-    {
-        public Guid DishId { get; set; }
+namespace ChefNear.Application.Features.DishImages.Commands.AddDishImage;
 
-        [JsonIgnore]
-        public string ChefId { get; set; } = string.Empty;
+public record AddDishImageRequest(
+    Guid DishId,
+    IFormFile File,
+    bool IsPrimary
+);
 
-        public IFormFile File { get; set; } = null!;
-
-        public bool IsPrimary { get; set; }
-    }
-}
+public record AddDishImageCommand(
+    Guid DishId,
+    string ChefId,
+    IFormFile File,
+    bool IsPrimary
+) : IRequest<Result<Guid>>;

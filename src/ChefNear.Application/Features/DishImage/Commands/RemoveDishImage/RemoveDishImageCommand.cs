@@ -1,13 +1,9 @@
-﻿using ChefNear.Shared.ResultPattern;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System.Text.Json.Serialization;
 
-namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage
-{
-    public class RemoveDishImageCommand : IRequest<Result>
-    {
-        public Guid ImageId { get; set; }
-        [JsonIgnore]
-        public string ChefId { get; set; } = string.Empty;
-    }
-}
+namespace ChefNear.Application.Features.DishImages.Commands.RemoveDishImage;
+
+public record RemoveDishImageCommand(
+    Guid ImageId,
+    string ChefId
+) : IRequest<Result>;

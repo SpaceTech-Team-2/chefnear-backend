@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using ChefNear.API.Controllers;
 using ChefNear.Application.Features.Categories.Queries;
 using ChefNear.Application.Features.Category.Commands.CreateCategory;
@@ -39,15 +39,12 @@ public class CategoriesController : BaseApiController
     [HttpPut("{categoryId:guid}")]
     public async Task<IActionResult> Update(
         Guid categoryId,
-        [FromBody] UpdateCategoryCommand command)
+        [FromBody] UpdateCategoryRequest request)
     {
-        if (categoryId != command.CategoryId)
-        {
-            return BadRequest(new
-            {
-                message = "Route categoryId does not match request body."
-            });
-        }
+        var command = new UpdateCategoryCommand(
+            categoryId,
+            request.Name,
+            request.Description);
 
         var result = await Mediator.Send(command);
 
@@ -60,11 +57,7 @@ public class CategoriesController : BaseApiController
     [HttpDelete("{categoryId:guid}")]
     public async Task<IActionResult> Delete(Guid categoryId)
     {
-        var result = await Mediator.Send(
-            new DeleteCategoryCommand
-            {
-                CategoryId = categoryId
-            });
+        var result = await Mediator.Send(new DeleteCategoryCommand(categoryId));
 
         return HandleResult(
             result,

@@ -1,24 +1,16 @@
-﻿using ChefNear.Application.Features.Dish.DTOs;
+using ChefNear.Application.Features.Dish.DTOs;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
 
 namespace ChefNear.Application.Features.Dishes.Queries.GetNearbyDishesQuery;
 
-public class GetNearbyDishesQuery : IRequest<Result<List<DishSummaryDto>>>
-{
-    public string? Search { get; set; }
-
-    public Guid? CategoryId { get; set; }
-
-    public decimal? MaxPrice { get; set; }
-
-    public double? ClientLatitude { get; set; }
-
-    public double? ClientLongitude { get; set; }
-
-    public double? MaxDistanceKm { get; set; }
-
-    public int PageNumber { get; set; } = 1;
-
-    public int PageSize { get; set; } = 10;
-}
+public record GetNearbyDishesQuery(
+    string? Search = null,
+    Guid? CategoryId = null,
+    decimal? MaxPrice = null,
+    double? ClientLatitude = null,
+    double? ClientLongitude = null,
+    double? MaxDistanceKm = null,
+    int PageNumber = 1,
+    int PageSize = 10
+) : IRequest<Result<List<DishSummaryDto>>>;

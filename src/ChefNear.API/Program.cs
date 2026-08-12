@@ -49,11 +49,6 @@ try
         options.TemplatePath = Path.Combine(builder.Environment.ContentRootPath, "EmailTemplates");
     });
 
-    builder.Services.Configure<ApiBehaviorOptions>(options =>
-    {
-        options.SuppressModelStateInvalidFilter = true;
-    });
-
     // Hangfire
     builder.Services.AddHangfire(config =>
         config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));

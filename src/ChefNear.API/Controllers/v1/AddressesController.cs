@@ -1,13 +1,10 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using ChefNear.Application.Features.Address.Queries.GetAddressById;
 using ChefNear.Application.Features.Addresses.Commands;
 using ChefNear.Application.Features.Addresses.Queries;
-using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Application.Features.Addresses.Commands;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ChefNear.API.Controllers.v1;
 
@@ -19,35 +16,31 @@ namespace ChefNear.API.Controllers.v1;
 [Authorize]
 public class AddressesController : BaseApiController
 {
-
-
     [HttpGet("my")]
     public async Task<IActionResult> GetMyAddresses()
     {
-        var userId = GetUser().Id;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
+        var userId = Guid.Parse(GetUser().Id);
 
         var result = await Mediator.Send(
-            new GetUserAddressesQuery
-            {
-                UserId = Guid.Parse(userId)
-            });
+            new GetUserAddressesQuery(userId));
 
         return HandleResult(result);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(
-      [FromBody] CreateAddressCommand command)
+      [FromBody] CreateAddressRequest request)
     {
-        var userId = GetUser().Id;
+        var userId = Guid.Parse(GetUser().Id);
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.UserId = Guid.Parse(userId);
+        var command = new CreateAddressCommand(
+            userId,
+            request.Label,
+            request.City,
+            request.Details,
+            request.Latitude,
+            request.Longitude,
+            request.IsDefault);
 
         var result = await Mediator.Send(command);
 
@@ -55,20 +48,23 @@ public class AddressesController : BaseApiController
             result,
             "Address created successfully.");
     }
+
     [HttpPut("{addressId:guid}")]
     public async Task<IActionResult> Update(
          Guid addressId,
-         [FromBody] UpdateAddressCommand command)
+         [FromBody] UpdateAddressRequest request)
     {
-        if (addressId != command.AddressId)
-            return BadRequest("Route addressId does not match request body.");
+        var userId = Guid.Parse(GetUser().Id);
 
-        var userId = GetUser().Id;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.UserId = Guid.Parse(userId);
+        var command = new UpdateAddressCommand(
+            addressId,
+            userId,
+            request.Label,
+            request.City,
+            request.Details,
+            request.Latitude,
+            request.Longitude,
+            request.IsDefault);
 
         var result = await Mediator.Send(command);
 
@@ -80,16 +76,9 @@ public class AddressesController : BaseApiController
     [HttpDelete("{addressId:guid}")]
     public async Task<IActionResult> Delete(Guid addressId)
     {
-        var userId = GetUser().Id;
+        var userId = Guid.Parse(GetUser().Id);
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        var command = new DeleteAddressCommand
-        {
-            AddressId = addressId,
-            UserId = Guid.Parse(userId)
-        };
+        var command = new DeleteAddressCommand(addressId, userId);
 
         var result = await Mediator.Send(command);
 
@@ -97,14 +86,12 @@ public class AddressesController : BaseApiController
             result,
             "Address deleted successfully.");
     }
+
     [HttpGet("{addressId:guid}")]
     public async Task<IActionResult> GetById(Guid addressId)
     {
         var result = await Mediator.Send(
-            new GetAddressByIdQuery
-            {
-                AddressId = addressId
-            });
+            new GetAddressByIdQuery(addressId));
 
         return HandleResult(result);
     }

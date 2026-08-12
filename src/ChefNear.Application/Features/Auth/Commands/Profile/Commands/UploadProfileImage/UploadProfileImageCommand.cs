@@ -1,15 +1,10 @@
-﻿using ChefNear.Shared.ResultPattern;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ChefNear.Application.Features.Auth.Commands.Profile.Commands.UploadProfileImage
-{
-   public class UploadProfileImageCommand : IRequest<Result>
-    {
-        public Guid UserId { get; set; }
-        public byte[] FileBytes { get; set; } = default!;
-        public string FileName { get; set; } = default!;
-    }
-}
+namespace ChefNear.Application.Features.Auth.Commands.Profile.Commands.UploadProfileImage;
+
+public record UploadProfileImageCommand(
+    Guid UserId,
+    byte[] FileBytes,
+    string FileName
+) : IRequest<Result>;

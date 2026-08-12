@@ -42,9 +42,18 @@ public class OrdersController : BaseApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Checkout([FromBody] PlaceOrderCommand command)
+    public async Task<IActionResult> Checkout([FromBody] PlaceOrderRequest request)
     {
-        command.Client = GetUser();
+        var command = new PlaceOrderCommand(
+            request.IdempotencyKey,
+            request.Items,
+            request.Notes,
+            request.DeliveryAddressId,
+            request.DeliveryAddress,
+            request.PaymentGateway,
+            request.OrderFulfillmentType,
+            GetUser()
+        );
 
         var result = await Mediator.Send(command);
         return HandleResult(result);

@@ -2,27 +2,18 @@ using ChefNear.Application.Features.Auth.DTOs;
 using ChefNear.Shared.ResultPattern;
 using HomeChefMarketplace.Domain.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace ChefNear.Application.Features.Auth.Commands.Register;
 
-public class RegisterCommand : IRequest<Result<RegisterResponse>>
-{
-    public string Email { get; set; } = string.Empty;
-
-    public string Password { get; set; } = string.Empty;
-
-    public string ConfirmPassword { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string? PhoneNumber { get; set; }
-
-    // public IFormFile? Photo { get; set; }
-    public string DisplayName { get; set; } = string.Empty;
-
-    public string Description { get; set; } = default!;
-
-    public UserRole Role { get; set; } = UserRole.Client;
-
-    public AddressDto? Address { get; set; }
-}
+public record RegisterCommand(
+    string Email,
+    string Password,
+    string ConfirmPassword,
+    string FirstName,
+    string LastName,
+    string? PhoneNumber,
+    string DisplayName,
+    string Description,
+    UserRole Role,
+    AddressDto? Address
+) : IRequest<Result<RegisterResponse>>;

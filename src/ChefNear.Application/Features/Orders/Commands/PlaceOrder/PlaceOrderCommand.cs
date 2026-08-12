@@ -9,16 +9,22 @@ namespace ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 
 public record OrderItemRequest(Guid DishId, int Quantity);
 
-public record PlaceOrderCommand( 
-    Guid IdempotencyKey,
+public record PlaceOrderRequest(Guid IdempotencyKey,
     List<OrderItemRequest> Items,
     string Notes,
     Guid? DeliveryAddressId,
     AddressDto? DeliveryAddress,
     PaymentGateway PaymentGateway,
     OrderFulfillmentType OrderFulfillmentType
-) : IRequest<Result<PlaceOrderResponse>>
-{
-    [JsonIgnore]
-    public CurrentUser Client { get; set; } = default!;
-}
+);
+
+public record PlaceOrderCommand(
+    Guid IdempotencyKey,
+    List<OrderItemRequest> Items,
+    string Notes,
+    Guid? DeliveryAddressId,
+    AddressDto? DeliveryAddress,
+    PaymentGateway PaymentGateway,
+    OrderFulfillmentType OrderFulfillmentType,
+    CurrentUser Client
+) : IRequest<Result<PlaceOrderResponse>>;

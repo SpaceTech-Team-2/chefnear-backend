@@ -1,9 +1,9 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using ChefNear.Application.Features.DishImage.Queries.GetDishImages;
 using ChefNear.Application.Features.DishImages.Commands.AddDishImage;
 using ChefNear.Application.Features.DishImages.Commands.RemoveDishImage;
 using ChefNear.Application.Features.DishImages.Commands.SetPrimaryDishImage;
-using MediatR;
+using ChefNear.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,77 +16,56 @@ namespace ChefNear.API.Controllers.v1;
 [Consumes("application/json")]
 public class DishImageController : BaseApiController
 {
-
-
     [HttpGet("{dishId:guid}")]
     public async Task<IActionResult> GetImages(Guid dishId)
     {
-        var result = await Mediator.Send(
-            new GetDishImagesQuery
-            {
-                DishId = dishId
-            });
+        var result = await Mediator.Send(new GetDishImagesQuery(dishId));
 
         return HandleResult(result);
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpPost]
     public async Task<IActionResult> Add(
-         [FromForm] AddDishImageCommand command)
+         [FromForm] AddDishImageRequest request)
     {
-        var userId = GetUser().Id;
+        var chefId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.ChefId = userId;
+        var command = new AddDishImageCommand(
+            request.DishId,
+            chefId,
+            request.File,
+            request.IsPrimary);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Dish image added successfully.");
+        return HandleResult(result, "Dish image added successfully.");
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpPut("primary")]
     public async Task<IActionResult> SetPrimary(
-        [FromBody] SetPrimaryDishImageCommand command)
+        [FromBody] SetPrimaryDishImageRequest request)
     {
-        var userId = GetUser().Id;
+        var chefId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.ChefId = userId;
+        var command = new SetPrimaryDishImageCommand(request.ImageId, chefId);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Primary image updated successfully.");
+        return HandleResult(result, "Primary image updated successfully.");
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpDelete("{imageId:guid}")]
     public async Task<IActionResult> Delete(Guid imageId)
     {
-        var userId = GetUser().Id;
+        var chefId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        var command = new RemoveDishImageCommand
-        {
-            ImageId = imageId,
-            ChefId = userId
-        };
+        var command = new RemoveDishImageCommand(imageId, chefId);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Dish image deleted successfully.");
+        return HandleResult(result, "Dish image deleted successfully.");
     }
 }

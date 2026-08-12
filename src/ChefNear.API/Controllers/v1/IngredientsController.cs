@@ -1,9 +1,9 @@
-﻿using Asp.Versioning;
-using ChefNear.Application.Features.Dish.DTOs;
+using Asp.Versioning;
 using ChefNear.Application.Features.Ingredints.Commands.AddIngredient;
 using ChefNear.Application.Features.Ingredints.Commands.RemoveIngredient;
 using ChefNear.Application.Features.Ingredints.Commands.UpdateIngredient;
 using ChefNear.Application.Features.Ingredints.Queries.GetIngredientsQuery;
+using ChefNear.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,73 +19,56 @@ public class IngredientsController : BaseApiController
     [HttpGet("{dishId:guid}")]
     public async Task<IActionResult> GetIngredients(Guid dishId)
     {
-        var result = await Mediator.Send(
-            new GetIngredientsQuery
-            {
-                DishId = dishId
-            });
+        var result = await Mediator.Send(new GetIngredientsQuery(dishId));
 
-        return HandleResult(
-            result,
-            "Ingredients retrieved successfully.");
+        return HandleResult(result, "Ingredients retrieved successfully.");
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpPost]
     public async Task<IActionResult> Add(
-        [FromBody] AddIngredientCommand command)
+        [FromBody] AddIngredientRequest request)
     {
-        var userId = GetUser().Id;
+        var chefId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.ChefId = userId;
+        var command = new AddIngredientCommand(
+            request.DishId,
+            chefId,
+            request.Name,
+            request.Quantity);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Ingredient added successfully.");
+        return HandleResult(result, "Ingredient added successfully.");
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpPut]
     public async Task<IActionResult> Update(
-        [FromBody] UpdateIngredientCommand command)
+        [FromBody] UpdateIngredientRequest request)
     {
-        var userId = GetUser().Id;
+        var chefId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        command.ChefId = userId;
+        var command = new UpdateIngredientCommand(
+            request.IngredientId,
+            chefId,
+            request.Name,
+            request.Quantity);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Ingredient updated successfully.");
+        return HandleResult(result, "Ingredient updated successfully.");
     }
 
-    [Authorize(Roles = "Chef")]
+    [Authorize(Roles = UserRoles.Chef)]
     [HttpDelete("{ingredientId:guid}")]
     public async Task<IActionResult> Delete(Guid ingredientId)
     {
-        var userId = GetUser().Id;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
+        var chefId = GetUser().Id;
 
         var result = await Mediator.Send(
-            new RemoveIngredientCommand
-            {
-                IngredientId = ingredientId,
-                ChefId = userId
-            });
+            new RemoveIngredientCommand(ingredientId, chefId));
 
-        return HandleResult(
-            result,
-            "Ingredient removed successfully.");
+        return HandleResult(result, "Ingredient removed successfully.");
     }
 }

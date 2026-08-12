@@ -9,10 +9,8 @@ using ChefNear.Application.Features.Auth.Commands.Logout;
 using ChefNear.Application.Features.Auth.Commands.RefreshToken;
 using ChefNear.Application.Features.Auth.Commands.Register;
 using ChefNear.Application.Features.Auth.Commands.ResetPassword;
-using ChefNear.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ChefNear.API.Controllers.v1;
 
@@ -39,21 +37,13 @@ public class AuthController : BaseApiController
     // 3. Logout
     [HttpPost("logout")]
     [Authorize]
-    public async Task<IActionResult> Logout([FromBody] LogoutCommand? command = null)
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest? request = null)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized(ApiResponse.FailureResponse("User not authenticated.", statusCode: 401));
-        }
+        var userId = GetUser().Id;
 
-        var refreshToken = command?.RefreshToken ?? Request.Headers["RefreshToken"].FirstOrDefault();
+        var refreshToken = request?.RefreshToken ?? Request.Headers["RefreshToken"].FirstOrDefault();
 
-        var logoutCommand = new LogoutCommand
-        {
-            UserId = userId,
-            RefreshToken = refreshToken
-        };
+        var logoutCommand = new LogoutCommand(userId, refreshToken);
 
         var result = await Mediator.Send(logoutCommand);
         return HandleResult(result, "Logged out successfully.");
@@ -71,11 +61,7 @@ public class AuthController : BaseApiController
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
     {
-        var command = new ConfirmEmailCommand
-        {
-            UserId = userId,
-            Token = token
-        };
+        var command = new ConfirmEmailCommand(userId, token);
 
         var result = await Mediator.Send(command);
         return HandleResult(result, "Email confirmed successfully.");

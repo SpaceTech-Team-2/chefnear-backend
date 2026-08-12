@@ -1,29 +1,28 @@
-﻿using ChefNear.Application.Features.Dish.DTOs;
+using ChefNear.Application.Features.Dish.DTOs;
 using ChefNear.Shared.ResultPattern;
 using MediatR;
-using System.Text.Json.Serialization;
 
 namespace ChefNear.Application.Features.Dishes.Commands;
 
-public class CreateDishCommand : IRequest<Result<Guid>>
-{
-    [JsonIgnore]
+public record CreateDishRequest(
+    Guid CategoryId,
+    string Name,
+    string? Description,
+    decimal Price,
+    int QuantityAvailable,
+    string? AllergenInfo,
+    List<string> ImageUrls,
+    List<IngredientDto> Ingredients
+);
 
-    public Guid ChefId { get; set; }
-    public Guid CategoryId { get; set; }
-
-    public string Name { get; set; } = string.Empty;
-
-    public string? Description { get; set; }
-
-    public decimal Price { get; set; }
-
-    public int QuantityAvailable { get; set; }
-
-    public string? AllergenInfo { get; set; }
-
-    public List<string> ImageUrls { get; set; } = new();
-
-    public List<IngredientDto> Ingredients { get; set; } = new();
-}
-
+public record CreateDishCommand(
+    Guid ChefId,
+    Guid CategoryId,
+    string Name,
+    string? Description,
+    decimal Price,
+    int QuantityAvailable,
+    string? AllergenInfo,
+    List<string> ImageUrls,
+    List<IngredientDto> Ingredients
+) : IRequest<Result<Guid>>;

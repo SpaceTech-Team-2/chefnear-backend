@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using ChefNear.Application.Features.Auth.Commands.Profile.Commands.DeleteProfileImage;
 using ChefNear.Application.Features.Auth.Commands.Profile.Commands.UploadProfileImage;
 using ChefNear.Application.Features.Auth.Queries.Profile.GetMyProfile;
@@ -21,26 +21,19 @@ public class ProfileController : BaseApiController
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
-        var userId = GetUser().Id;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
+        var userId = Guid.Parse(GetUser().Id);
 
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms);
 
-        var command = new UploadProfileImageCommand
-        {
-            UserId = Guid.Parse(userId),
-            FileBytes = ms.ToArray(),
-            FileName = file.FileName
-        };
+        var command = new UploadProfileImageCommand(
+            userId,
+            ms.ToArray(),
+            file.FileName);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Profile image uploaded successfully.");
+        return HandleResult(result, "Profile image uploaded successfully.");
     }
 
     [HttpDelete("image")]
@@ -48,19 +41,11 @@ public class ProfileController : BaseApiController
     {
         var userId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        var command = new DeleteProfileImageCommand
-        {
-            UserId = userId
-        };
+        var command = new DeleteProfileImageCommand(userId);
 
         var result = await Mediator.Send(command);
 
-        return HandleResult(
-            result,
-            "Profile image deleted successfully.");
+        return HandleResult(result, "Profile image deleted successfully.");
     }
 
     [HttpGet("me")]
@@ -68,14 +53,7 @@ public class ProfileController : BaseApiController
     {
         var userId = GetUser().Id;
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        var result = await Mediator.Send(
-            new GetMyProfileQuery
-            {
-                UserId = userId
-            });
+        var result = await Mediator.Send(new GetMyProfileQuery(userId));
 
         return HandleResult(result);
     }

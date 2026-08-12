@@ -1,9 +1,6 @@
-﻿using ChefNear.Shared.ResultPattern;
+using ChefNear.Shared.ResultPattern;
 using MediatR;
 
 namespace ChefNear.Application.Features.Category.Commands.DeleteCategory;
 
-public class DeleteCategoryCommand : IRequest<Result>
-{
-    public Guid CategoryId { get; set; }
-}
+public record DeleteCategoryCommand(Guid CategoryId) : IRequest<Result>;
