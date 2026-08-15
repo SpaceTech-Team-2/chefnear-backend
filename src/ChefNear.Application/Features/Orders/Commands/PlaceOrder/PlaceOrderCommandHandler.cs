@@ -69,12 +69,7 @@ public class PlaceOrderCommandHandler(
             });
         }
 
-        var payment = new Payment
-        {
-            IdempotencyKey = request.IdempotencyKey.ToString(),
-            Status = PaymentStatus.Pending,
-            Amount = totalAmount,
-        };
+        var payment = Payment.CreatePayment(request.IdempotencyKey.ToString(), totalAmount);
 
         var order = new Order
         {

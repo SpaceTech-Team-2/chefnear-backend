@@ -12,7 +12,7 @@ namespace ChefNear.Domain.Entities
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
 
-        public decimal Amount { get; set; }
+        public decimal Amount { get; private set; }
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
         public string? FailureReason { get; set; } 
@@ -67,5 +67,11 @@ namespace ChefNear.Domain.Entities
             Status = PaymentStatus.Failed;
             FailureReason = reason;
         }
+
+        public static Payment CreatePayment(string idempotencyKey, decimal amount) => new Payment
+        {
+            IdempotencyKey = idempotencyKey,
+            Amount = amount
+        };
     }
 }
