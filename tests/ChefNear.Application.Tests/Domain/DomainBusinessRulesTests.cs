@@ -141,19 +141,50 @@ namespace ChefNear.Application.Tests.Domain
         }
 
         [Fact]
-        public void Payment_Refund_ShouldSetStatusAndRefundDetails()
+        public void Payment_InitializeRefund_ShouldSetStatusAndRefundDetails()
         {
             // Arrange
             var payment = new Payment();
             var refundId = "refund_123456";
 
             // Act
-            payment.Refund(refundId);
+            payment.InitializeRefund(refundId);
+
+            // Assert
+            payment.Status.Should().Be(PaymentStatus.RefundInProgress);
+            payment.RefundTransactionId.Should().Be(refundId);
+            payment.RefundRequestedAt.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Payment_ConfirmRefund_ShouldSetStatusAndRefundDetails()
+        {
+            // Arrange
+            var payment = new Payment();
+            var refundId = "refund_123456";
+            payment.InitializeRefund(refundId);
+
+            // Act
+            payment.ConfirmRefund();
 
             // Assert
             payment.Status.Should().Be(PaymentStatus.Refunded);
             payment.RefundTransactionId.Should().Be(refundId);
             payment.RefundedAt.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Payment_ConfirmRefund_ShouldThrowsInvalidOperationExceptions()
+        {
+            // Arrange
+            var payment = new Payment();
+            payment.Hold();
+
+            // Act
+            var fun = payment.ConfirmRefund;
+
+            // Assert
+            fun.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

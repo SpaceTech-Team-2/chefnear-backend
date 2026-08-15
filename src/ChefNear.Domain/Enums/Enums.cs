@@ -38,17 +38,6 @@ public enum CancelledBy
     Chef = 2
 }
 
-// Full amount is charged once the chef accepts, held in escrow,
-// and released the instant the client confirms delivery (no weekly batching).
-public enum PaymentStatus
-{
-    Pending = 1,
-    Held = 2,
-    Released = 3,
-    Refunded = 4,
-    Failed = 5
-}
-
 public enum DisputeType
 {
     DeliveryDispute = 1,   // FR-21: chef files, client didn't confirm delivery

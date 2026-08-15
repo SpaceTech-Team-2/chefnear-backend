@@ -1,7 +1,7 @@
 using ChefNear.Application.Common.Jobs;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
-using HomeChefMarketplace.Domain.Enums;
+using ChefNear.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
