@@ -1,7 +1,7 @@
 using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Domain.Enums;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
-using HomeChefMarketplace.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -69,7 +69,7 @@ public class ProcessPaymobWebhookCommandHandler(
                 return Result.Success();
             }
 
-            payment.Refund();
+            payment.ConfirmRefund();
 
             _logger.LogInformation(
                 "Payment status updated to Refunded via Paymob webhook. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}",

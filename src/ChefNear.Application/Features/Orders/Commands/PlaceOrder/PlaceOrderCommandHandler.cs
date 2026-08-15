@@ -2,6 +2,7 @@ using AutoMapper;
 using ChefNear.Application.Common.Payments;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
+using ChefNear.Domain.Enums;
 using ChefNear.Domain.Errors;
 using ChefNear.Domain.Exceptions;
 using ChefNear.Shared.ResultPattern;

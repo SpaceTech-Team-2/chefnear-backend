@@ -1,4 +1,5 @@
 using ChefNear.Domain.Common;
+using ChefNear.Domain.Enums;
 using HomeChefMarketplace.Domain.Enums;
 using System;
 
@@ -25,6 +26,7 @@ namespace ChefNear.Domain.Entities
         public DateTime? HeldAt { get; private set; }
         public DateTime? ReleasedAt { get; private set; }
         public DateTime? RefundedAt { get; private set; }
+        public DateTime? RefundRequestedAt { get; private set; }
 
         public void Hold()
         {
@@ -38,12 +40,26 @@ namespace ChefNear.Domain.Entities
             ReleasedAt = DateTime.UtcNow;
         }
 
-        public void Refund(string? refundTransactionId = null)
+        public void InitializeRefund(string refundTransactionId)
         {
+            if (string.IsNullOrWhiteSpace(refundTransactionId))
+                throw new ArgumentException("Cannot initialize refund without refundTransactionId.");
+
+            RefundTransactionId = refundTransactionId;
+            Status = PaymentStatus.RefundInProgress;
+            RefundRequestedAt = DateTime.UtcNow;
+        }
+
+        public void ConfirmRefund() 
+        {
+            if (Status == PaymentStatus.Refunded)
+                return;
+
+            if (Status != PaymentStatus.RefundInProgress)
+                throw new InvalidOperationException("Cannot refund without initializing refund first.");
+
             Status = PaymentStatus.Refunded;
             RefundedAt = DateTime.UtcNow;
-            if (!string.IsNullOrEmpty(refundTransactionId))
-                RefundTransactionId = refundTransactionId;
         }
 
         public void MarkAsFailed(string reason)
