@@ -1,5 +1,7 @@
 using ChefNear.Application.Common.Payments;
 using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Interfaces;
+using ChefNear.Domain.Entities;
 using ChefNear.Domain.Enums;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
@@ -12,12 +14,13 @@ namespace ChefNear.Application.Features.Orders.Commands.CancelOrder;
 public class CancelOrderCommandHandler(
     IUnitOfWork unitOfWork,
     IPaymentGatewayFactory paymentGatewayFactory,
-    ILogger<CancelOrderCommandHandler> logger) : IRequestHandler<CancelOrderCommand, Result>
+    ILogger<CancelOrderCommandHandler> logger,
+    INotificationService notificationService) : IRequestHandler<CancelOrderCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IPaymentGatewayFactory _paymentGatewayFactory = paymentGatewayFactory;
     private readonly ILogger<CancelOrderCommandHandler> _logger = logger;
-
+    private readonly INotificationService _notificationService = notificationService;
     public async Task<Result> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
     {
         var order = await _unitOfWork.Orders.GetByIdWithDetailsAsync(request.OrderId);
@@ -73,18 +76,36 @@ public class CancelOrderCommandHandler(
             {
                 order.Payment.MarkAsFailed("Order cancelled before payment completed.");
             }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var notification = new Notification
+            {
+                Message = isClient
+                    ? "Your order has been cancelled."
+                    : "The client has cancelled the order.",
+                Status = NotificationStatus.Pending,
+                OrderId = order.Id,
+                Type = NotificationType.OrderCancelled,
+                UserId = isClient ? order.ChefId : order.ClientId
+            };
+
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // In-App Notification
+            await _notificationService.SendAsync(
+                notification.UserId,
+                notification.Id,
+                notification.Message,
+                notification.Type
+            );
         }
 
-        // TODO: Notification creation
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
         _logger.LogInformation("Order #{OrderId} successfully cancelled by User {UserId}", order.Id, currentUserId);
-        
-        
+
         return Result.Success();
     }
-    
 
     private static bool IsClientReason(CancellationReasonType reasonType) =>
         reasonType is CancellationReasonType.ClientChangedMind

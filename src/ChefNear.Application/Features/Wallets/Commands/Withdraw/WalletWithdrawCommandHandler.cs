@@ -30,6 +30,7 @@ public class WalletWithdrawCommandHandler(
         try
         {
             var transaction = wallet.Withdraw(request.Amount);
+            await unitOfWork.Transactions.AddAsync(transaction);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             var response = mapper.Map<WalletWithdrawalResponse>(transaction);

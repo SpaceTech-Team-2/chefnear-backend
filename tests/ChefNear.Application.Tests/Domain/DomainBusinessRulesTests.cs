@@ -211,18 +211,16 @@ namespace ChefNear.Application.Tests.Domain
             var orderId = Guid.NewGuid();
 
             // Act
-            wallet.AddEarnings(amount, orderId);
+            var transaction = wallet.AddEarnings(amount, orderId);
 
             // Assert
             wallet.Balance.Should().Be(amount);
             wallet.TotalEarned.Should().Be(amount);
-            wallet.Transactions.Should().ContainSingle();
 
-            var tx = wallet.Transactions.Single();
-            tx.Amount.Should().Be(amount);
-            tx.AmountAfter.Should().Be(amount);
-            tx.Type.Should().Be(WalletTransactionType.OrderIncome);
-            tx.OrderId.Should().Be(orderId);
+            transaction.Amount.Should().Be(amount);
+            transaction.AmountAfter.Should().Be(amount);
+            transaction.Type.Should().Be(WalletTransactionType.OrderIncome);
+            transaction.OrderId.Should().Be(orderId);
         }
 
         [Fact]
@@ -242,7 +240,6 @@ namespace ChefNear.Application.Tests.Domain
             // Assert
             wallet.Balance.Should().Be(150.00M);
             wallet.TotalWithdrawn.Should().Be(50.00M);
-            wallet.Transactions.Should().HaveCount(2);
         }
 
         [Fact]

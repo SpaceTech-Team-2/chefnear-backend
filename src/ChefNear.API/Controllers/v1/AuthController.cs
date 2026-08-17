@@ -16,6 +16,7 @@ namespace ChefNear.API.Controllers.v1;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
+[ApiController]
 public class AuthController : BaseApiController
 {
     // 1. Register

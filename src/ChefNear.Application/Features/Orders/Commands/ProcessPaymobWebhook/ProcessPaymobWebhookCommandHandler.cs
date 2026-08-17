@@ -1,4 +1,6 @@
 using ChefNear.Application.Common.Persistence.Interfaces;
+using ChefNear.Application.Interfaces;
+using ChefNear.Domain.Entities;
 using ChefNear.Domain.Enums;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
@@ -9,10 +11,12 @@ namespace ChefNear.Application.Features.Orders.Commands.ProcessPaymobWebhook;
 
 public class ProcessPaymobWebhookCommandHandler(
     IUnitOfWork unitOfWork,
-    ILogger<ProcessPaymobWebhookCommandHandler> logger) : IRequestHandler<ProcessPaymobWebhookCommand, Result>
+    ILogger<ProcessPaymobWebhookCommandHandler> logger,
+    INotificationService notificationService) : IRequestHandler<ProcessPaymobWebhookCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILogger<ProcessPaymobWebhookCommandHandler> _logger = logger;
+    private readonly INotificationService notificationService = notificationService;
 
     public async Task<Result> Handle(ProcessPaymobWebhookCommand request, CancellationToken cancellationToken)
     {
@@ -101,11 +105,33 @@ public class ProcessPaymobWebhookCommandHandler(
             payment.Hold();
             order.Confirm();
 
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             _logger.LogInformation(
                 "Payment held and order confirmed. PaymentId: {PaymentId}, OrderId: {OrderId}, TransactionId: {TransactionId}",
                 paymentId,
                 order.Id,
                 transaction.TransactionId);
+
+            var notification = new Notification
+            {
+                Message = "You have received a new order!",
+                Status = NotificationStatus.Pending,
+                OrderId = order.Id,
+                Type = NotificationType.OrderPlaced,
+                UserId = order.ChefId
+            };
+
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Send In-App Nontification
+            await notificationService.SendAsync(
+                notification.UserId,
+                notification.Id,
+                notification.Message,
+                notification.Type
+            );
         }
         else
         {
@@ -122,9 +148,9 @@ public class ProcessPaymobWebhookCommandHandler(
                 order.Id,
                 transaction.TransactionId,
                 failureReason);
-        }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
 
         return Result.Success();
     }

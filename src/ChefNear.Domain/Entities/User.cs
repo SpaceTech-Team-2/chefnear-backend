@@ -17,5 +17,6 @@ namespace ChefNear.Domain.Entities
         // ---- Navigation ----
         public ICollection<Dispute> FiledDisputes { get; set; } = new List<Dispute>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<DeviceToken> DeviceTokens { get; set; } = new List<DeviceToken>();
     }
 }
