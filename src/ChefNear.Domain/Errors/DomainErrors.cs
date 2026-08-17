@@ -105,4 +105,10 @@ public static class DomainErrors
         public static readonly Error WalletNotFound =
             Error.NotFound("Wallet.WalletNotFound", "Wallet not found.");
     }
+
+    public static class Notifications
+    {
+        public static readonly Error NotFound =
+            Error.NotFound("Notifications.NotFound", "Notification not found.");
+    }
 }

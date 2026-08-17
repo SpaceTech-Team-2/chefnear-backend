@@ -16,7 +16,7 @@
 		<Folder Include="Features\Auth\Mappings\" />
 		<Folder Include="Features\Auth\Queries\" />
 		<Folder Include="Common\Behaviours\" />
-		<Folder Include="Features\Notifications\" />
+		<Folder Include="Features\Notifications\Commands\" />
 		<Folder Include="Features\Orders\Queries\" />
 	</ItemGroup>
 	<ItemGroup>
