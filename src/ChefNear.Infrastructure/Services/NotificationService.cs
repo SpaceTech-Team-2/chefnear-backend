@@ -9,7 +9,7 @@ internal class NotificationMessage
 {
     public Guid Id { get; set; }    
     public string Message { get; set; } = string.Empty!;
-    public NotificationType Type { get; set; }
+    public string Type { get; set; }
     public Dictionary<string,string> additionalData { get; set; }   
 }
 
@@ -29,7 +29,7 @@ internal class NotificationService(IHubContext<NotificationHub> hub) : INotifica
         {
             Id = notificationId,
             Message = message,
-            Type = type,
+            Type = type.ToString(),
             additionalData = additionalData
         };
 

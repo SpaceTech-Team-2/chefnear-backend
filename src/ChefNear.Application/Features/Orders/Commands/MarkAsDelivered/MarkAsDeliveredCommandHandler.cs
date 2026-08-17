@@ -41,7 +41,8 @@ public class MarkAsDeliveredCommandHandler(
         order.MarkAsDelivered();
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        backgroundJobClient.Enqueue(() => addChefEarningsJob.ExecuteAsync(payment.Id, order.ChefId));
+        backgroundJobClient
+            .Schedule(() => addChefEarningsJob.ExecuteAsync(payment.Id, order.ChefId), TimeSpan.FromSeconds(10));
 
         var notification = new Notification
         {

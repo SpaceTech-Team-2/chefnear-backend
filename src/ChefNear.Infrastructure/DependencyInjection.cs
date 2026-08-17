@@ -73,6 +73,7 @@ public static class DependencyInjection
         services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
         services.AddScoped<IPaymobService, PaymobService>();
         services.AddScoped<IAddChefEarningsJob, AddChefEarningsJob>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

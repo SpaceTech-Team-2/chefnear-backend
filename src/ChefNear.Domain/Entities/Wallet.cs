@@ -21,7 +21,7 @@ namespace ChefNear.Domain.Entities
 
         public ICollection<WalletTransaction> Transactions { get; set; } = new List<WalletTransaction>();
 
-        public void AddEarnings(decimal amount, Guid orderId, string? description = null)
+        public WalletTransaction AddEarnings(decimal amount, Guid orderId, string? description = null)
         {
             if (amount <= 0)
                 throw new ArgumentException("Earnings amount must be greater than zero.", nameof(amount));
@@ -29,14 +29,17 @@ namespace ChefNear.Domain.Entities
             Balance += amount;
             TotalEarned += amount;
 
-            Transactions.Add(new WalletTransaction
+            var transaction = new WalletTransaction
             {
                 Amount = amount,
                 AmountAfter = Balance,
                 Type = WalletTransactionType.OrderIncome,
                 Description = description ?? $"Earnings from Order #{orderId}",
-                OrderId = orderId
-            });
+                OrderId = orderId,
+                WalletId = Id
+            };
+
+            return transaction;
         }
 
         public WalletTransaction Withdraw(decimal amount, string? description = null)
@@ -55,10 +58,10 @@ namespace ChefNear.Domain.Entities
                 Amount = amount,
                 AmountAfter = Balance,
                 Type = WalletTransactionType.Withdrawal,
-                Description = description ?? "Withdrawal from wallet"
+                Description = description ?? "Withdrawal from wallet",
+                WalletId = Id
             };
 
-            Transactions.Add(transaction);
             return transaction;
         }
 

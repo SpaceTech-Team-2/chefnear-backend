@@ -112,11 +112,15 @@ try
 
     app.UseHttpsRedirection();
     app.UseCors("AllowAll");
+
+    if (app.Environment.IsDevelopment())
+    {
+        // Hangfire Dashboard — available in all environments
+        app.UseHangfireDashboard("/hangfire");
+    }
+
     app.UseAuthentication();  
     app.UseAuthorization();
-
-    // Hangfire Dashboard — available in all environments
-    app.UseHangfireDashboard("/hangfire");
 
     app.MapControllers();
 

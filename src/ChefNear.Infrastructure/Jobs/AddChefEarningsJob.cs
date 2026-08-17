@@ -47,18 +47,16 @@ internal class AddChefEarningsJob(IUnitOfWork unitOfWork, ILogger<AddChefEarning
 
         var amountToAdd = Math.Max(Math.Round(amount - (amount * commissionPercent)), 0);    // 100 - (100 * 0.2) = 100 - 20 = 80
 
-        var transaction = await unitOfWork.BeginTransactionAsync();
-
         try
         {
             // update Payment Status
             payment.Release();
 
             // Add earnings to Chef Wallet
-            wallet.AddEarnings(amountToAdd, payment.OrderId);
+            var transaction = wallet.AddEarnings(amountToAdd, payment.OrderId);
+            await unitOfWork.Transactions.AddAsync(transaction);
 
             await unitOfWork.SaveChangesAsync();
-            await transaction.CommitAsync();
         }
         catch(DbUpdateConcurrencyException ex)
         {
@@ -67,7 +65,17 @@ internal class AddChefEarningsJob(IUnitOfWork unitOfWork, ILogger<AddChefEarning
                 chefId,
                 paymentId);
 
-            await transaction.RollbackAsync();
+            foreach (var entry in ex.Entries)
+            {
+                logger.LogWarning(
+                    "Concurrency conflict on entity {EntityType}, key {Key}, State: {State}",
+                    entry.Metadata.ClrType.Name,
+                    entry.Properties
+                        .Where(p => p.Metadata.IsPrimaryKey())
+                        .Select(p => p.CurrentValue)
+                        .FirstOrDefault(),
+                    entry.State);
+            }
 
             throw;  // Hangfire will retry
         }

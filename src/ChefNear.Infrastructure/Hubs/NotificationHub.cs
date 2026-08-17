@@ -26,6 +26,7 @@ public class NotificationHub(IUnitOfWork unitOfWork) : Hub
             return;
 
         notification.Status = NotificationStatus.Received;
+        notification.SentAt = DateTime.UtcNow;
         await unitOfWork.SaveChangesAsync();
     }
 }
