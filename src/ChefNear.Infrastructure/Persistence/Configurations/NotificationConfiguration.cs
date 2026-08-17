@@ -1,4 +1,5 @@
 ﻿using ChefNear.Domain.Entities;
+using ChefNear.Domain.Enums;
 using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

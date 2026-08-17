@@ -6,6 +6,7 @@ using ChefNear.Application;
 using ChefNear.Application.Interfaces;
 using ChefNear.Application.Model;
 using ChefNear.Infrastructure;
+using ChefNear.Infrastructure.Hubs;
 using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Seed;
 using Hangfire;
@@ -118,6 +119,9 @@ try
     app.UseHangfireDashboard("/hangfire");
 
     app.MapControllers();
+
+    app.MapHub<NotificationHub>("/hubs/notifications")
+        .RequireAuthorization();
 
     app.Run();
 }

@@ -51,22 +51,3 @@ public enum DisputeStatus
     Resolved = 3,
     Rejected = 4
 }
-
-public enum NotificationType
-{
-    OrderPlaced = 1,
-    OrderAccepted = 2,
-    OrderPreparing = 3,
-    OrderReady = 4,
-    OrderDelivered = 5,
-    OrderCancelled = 6,
-    RefundProcessed = 7
-}
-
-public enum NotificationStatus
-{
-    Pending = 1,
-    Sent = 2,
-    Failed = 3
-}
-

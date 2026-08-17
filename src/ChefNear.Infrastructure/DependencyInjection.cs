@@ -30,12 +30,14 @@ public static class DependencyInjection
         services.AddDbContext<ChefNearDbContext>(options =>
             options.UseSqlServer(connectionString)
                    .EnableSensitiveDataLogging());
-                   
+
 
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.Configure<AppUrlSettings>(configuration.GetSection("AppUrlSettings"));
         services.Configure<PaymobSettings>(configuration.GetSection("PaymentGateway:Paymob"));
         services.Configure<FrontendSettings>(configuration.GetSection("FrontendSettings"));
+
+        services.AddSignalR();
 
         services.AddIdentity<User, IdentityRole>(options =>
         {

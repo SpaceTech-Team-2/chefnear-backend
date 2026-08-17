@@ -1,8 +1,5 @@
 ﻿using ChefNear.Domain.Common;
-using HomeChefMarketplace.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ChefNear.Domain.Enums;
 
 namespace ChefNear.Domain.Entities
 {
