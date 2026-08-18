@@ -53,10 +53,10 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasForeignKey<Payment>(p => p.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Order (1) → Review (1)
-            builder.HasOne(o => o.Review)
+            // Order (1) → Reviews (Many) 
+            builder.HasMany(o => o.Reviews)
                 .WithOne(r => r.Order)
-                .HasForeignKey<Review>(r => r.OrderId)
+                .HasForeignKey(r => r.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.Dispute)

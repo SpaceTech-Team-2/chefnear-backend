@@ -9,6 +9,7 @@ namespace ChefNear.Application.Common.Persistence.Interfaces
     public interface IGenericRepository<T> where T : class
     {
         Task<T?> GetByIdAsync(Guid id);
+        IQueryable<T> GetQueryable();
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<T?> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes);    

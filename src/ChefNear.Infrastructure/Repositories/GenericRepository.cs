@@ -52,7 +52,10 @@ namespace ChefNear.Infrastructure.Repositories;
         _dbContext.Set<T>().Remove(entity);
         return Task.CompletedTask;
     }
-
+    public virtual IQueryable<T> GetQueryable()
+    {
+        return _dbContext.Set<T>().AsQueryable();
+    }
     public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, params string[] includes)
     {
         var query = _dbContext.Set<T>().AsQueryable();

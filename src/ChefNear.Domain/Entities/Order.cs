@@ -31,8 +31,7 @@ namespace ChefNear.Domain.Entities
         public TimeSpan? EstimatedCookingTime { get; private set; }
 
         public Payment? Payment { get; set; }
-        public Review? Review { get; set; }
-        public Dispute? Dispute { get; set; }
+        public ICollection<Review> Reviews { get; set; } = new List<Review>(); public Dispute? Dispute { get; set; }
 
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

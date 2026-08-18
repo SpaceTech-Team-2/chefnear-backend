@@ -9,7 +9,6 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.ToTable("Reviews");
-
             builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Rating)
@@ -20,8 +19,8 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .IsRequired(false);
 
             builder.HasOne(r => r.Order)
-                .WithOne(o => o.Review)
-                .HasForeignKey<Review>(r => r.OrderId)
+                .WithMany(o => o.Reviews)
+                .HasForeignKey(r => r.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(r => r.Dish)
@@ -34,10 +33,10 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasForeignKey(r => r.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(r => r.OrderId)
+            
+            builder.HasIndex(r => new { r.OrderId, r.DishId })
                 .IsUnique();
 
-            builder.HasIndex(r => r.DishId);
             builder.HasIndex(r => r.ClientId);
             builder.HasIndex(r => r.Rating);
         }
