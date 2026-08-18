@@ -7,5 +7,8 @@ namespace ChefNear.Application.Common.Persistence.Interfaces
 {
     public interface IReviewRepo : IGenericRepository<Review>
     {
+        Task<List<Review>> GetByDishIdAsync(
+       Guid dishId,
+       CancellationToken cancellationToken);
     }
 }
