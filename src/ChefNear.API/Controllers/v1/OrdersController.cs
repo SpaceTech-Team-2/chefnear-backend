@@ -5,6 +5,8 @@ using ChefNear.Application.Features.Orders.Commands.MarkAsDelivered;
 using ChefNear.Application.Features.Orders.Commands.MarkAsReady;
 using ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 using ChefNear.Application.Features.Orders.Commands.StartPreparing;
+using ChefNear.Application.Features.Orders.DTOs;
+using ChefNear.Application.Features.Orders.Queries.GetOrderById;
 using ChefNear.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -247,6 +249,16 @@ public class OrdersController : BaseApiController
 
         var result = await Mediator.Send(command);
 
+        return HandleResult(result);
+    }
+
+    [HttpGet("{id:guid}")]
+    [Authorize]
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
+    {
+        var query = new GetOrderByIdQuery(id, GetUser());
+
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 }

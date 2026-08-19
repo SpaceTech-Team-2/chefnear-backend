@@ -30,6 +30,13 @@ namespace ChefNear.Domain.Entities
         public TimeSpan? EstimatedDeliveryTime { get; private set; }
         public TimeSpan? EstimatedCookingTime { get; private set; }
 
+        public DateTime? ConfirmedAt { get; private set; }  
+        public DateTime? AcceptedAt { get; private set; }
+        public DateTime? StartPreparingAt { get; private set; }
+        public DateTime? ReadyAt { get; private set; }
+        public DateTime? DeliveredAt { get; private set; }
+        public DateTime? CanceledAt { get; private set; }
+
         public Payment? Payment { get; set; }
         public ICollection<Review> Reviews { get; set; } = new List<Review>(); public Dispute? Dispute { get; set; }
 
@@ -42,11 +49,13 @@ namespace ChefNear.Domain.Entities
         public void Accept()
         {
             Status = OrderStatus.Accepted;
+            AcceptedAt = DateTime.UtcNow;
         }
 
         public void Confirm()
         {
             Status = OrderStatus.Confirmed;
+            ConfirmedAt = DateTime.UtcNow;
         }
 
         public void SoftDelete()
@@ -60,6 +69,7 @@ namespace ChefNear.Domain.Entities
             Status = OrderStatus.Preparing;
             if (estimatedCookingTime.HasValue)
                 EstimatedCookingTime = estimatedCookingTime.Value;
+            StartPreparingAt = DateTime.UtcNow;
         }
 
         public void MarkAsReady(decimal? deliveryFee = null,TimeSpan? estimatedDeliveryTime = null)
@@ -70,11 +80,13 @@ namespace ChefNear.Domain.Entities
 
             if(OrderFulfillmentType == OrderFulfillmentType.Delivery)
                 DeliveryFee = deliveryFee;
+            ReadyAt = DateTime.UtcNow;
         }
 
         public void MarkAsDelivered()
         {
             Status = OrderStatus.Delivered;
+            DeliveredAt = DateTime.UtcNow;
         }
 
         public void Cancel(CancelledBy cancelledBy, CancellationReasonType? reasonType = null, string? reason = null)
@@ -83,6 +95,7 @@ namespace ChefNear.Domain.Entities
             CancelledBy = cancelledBy;
             CancellationReasonType = reasonType;
             CancellationReason = reason;
+            CanceledAt = DateTime.UtcNow;
         }
     }
 }
