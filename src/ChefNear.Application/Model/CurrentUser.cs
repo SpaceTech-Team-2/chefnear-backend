@@ -8,4 +8,6 @@ public class CurrentUser
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
+
+    public bool IsInRole(string role) => Role == role;  
 }

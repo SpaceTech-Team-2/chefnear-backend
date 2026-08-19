@@ -8,5 +8,6 @@ namespace ChefNear.Application.Common.Persistence.Interfaces
     public interface IOrderRepo : IGenericRepository<Order>
     {
         Task<Order?> GetByIdWithDetailsAsync(Guid id);
+        Task<Order> GetByIdWithTrackingAsync(Guid id);
     }
 }
