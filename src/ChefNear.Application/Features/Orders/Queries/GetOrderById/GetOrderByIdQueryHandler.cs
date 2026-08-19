@@ -61,8 +61,8 @@ public class GetOrderByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : 
             new OrderTrackingDto
             {
                 Status = OrderStatus.Delivered,
-                Timestamp = order.DeletedAt,
-                Completed = order.DeletedAt.HasValue
+                Timestamp = order.DeliveredAt,
+                Completed = order.DeliveredAt.HasValue
             },
             new OrderTrackingDto
             {

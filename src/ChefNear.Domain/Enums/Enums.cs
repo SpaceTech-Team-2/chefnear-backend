@@ -24,12 +24,12 @@ public enum DishStatus
 public enum OrderStatus
 {
     Pending = 1,
-    Accepted = 2,
-    Preparing = 3,
-    ReadyForDelivery = 4,
-    Delivered = 5,
-    Cancelled = 6,
-    Confirmed = 7
+    Confirmed = 2,
+    Accepted = 3,
+    Preparing = 4,
+    ReadyForDelivery = 5,
+    Delivered = 6,
+    Cancelled = 7
 }
 
 public enum CancelledBy
