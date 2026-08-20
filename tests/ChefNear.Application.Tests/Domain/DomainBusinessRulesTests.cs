@@ -61,7 +61,7 @@ namespace ChefNear.Application.Tests.Domain
             order.MarkAsReady(30, deliveryTime);
 
             // Assert
-            order.Status.Should().Be(OrderStatus.ReadyForDelivery);
+            order.Status.Should().Be(OrderStatus.OutForDelivery);
             order.EstimatedDeliveryTime.Should().Be(deliveryTime);
             order.DeliveryFee.Should().Be(30);
         }

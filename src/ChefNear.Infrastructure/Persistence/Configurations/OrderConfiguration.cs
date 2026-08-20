@@ -30,10 +30,7 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
             builder.Property(o => o.IsActive)
                 .HasComputedColumnSql("""
                     CASE
-                        WHEN [Status] <> 'Delivered'
-                         AND [Status] <> 'Cancelled'
-                         AND [DeliveredAt] IS NULL
-                         AND [CanceledAt] IS NULL
+                        WHEN [Status] <> 'Delivered' AND [Status] <> 'Cancelled'
                         THEN CAST(1 AS bit)
                         ELSE CAST(0 AS bit)
                     END

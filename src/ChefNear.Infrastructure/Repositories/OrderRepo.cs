@@ -42,6 +42,7 @@ namespace ChefNear.Infrastructure.Repositories
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderItems)
                     .ThenInclude(o => o.Dish)
+                .Where(o => o.IsActive == active)
                 .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize)
                 .OrderByDescending(o => o.CreatedAt)

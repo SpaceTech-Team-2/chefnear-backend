@@ -76,7 +76,7 @@ namespace ChefNear.Domain.Entities
 
         public void MarkAsReady(decimal? deliveryFee = null,TimeSpan? estimatedDeliveryTime = null)
         {
-            Status = OrderStatus.ReadyForDelivery;
+            Status = OrderStatus.OutForDelivery;
             if (estimatedDeliveryTime.HasValue)
                 EstimatedDeliveryTime = estimatedDeliveryTime.Value;
 
