@@ -1,10 +1,8 @@
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Domain.Entities;
 using ChefNear.Infrastructure.Persistence;
+using HomeChefMarketplace.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefNear.Infrastructure.Repositories
 {
@@ -35,6 +33,20 @@ namespace ChefNear.Infrastructure.Repositories
                 .Include(o => o.Client)
                 .Include(o => o.DeliveryAddress)
                 .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<IReadOnlyList<Order>> GetOrdersWithDetails(string chefId, int pageNo, int pageSize, bool active = true)
+        {
+            return await _db.Orders
+                .Include(o => o.Client)
+                .Include(o => o.DeliveryAddress)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(o => o.Dish)
+                .Skip(pageSize * (pageNo - 1))
+                .Take(pageSize)
+                .Where(o => o.Status < OrderStatus.Delivered && o.DeliveredAt == null && o.CanceledAt == null)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
         }
     }
 }
