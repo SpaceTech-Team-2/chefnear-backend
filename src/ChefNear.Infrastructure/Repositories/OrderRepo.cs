@@ -37,15 +37,16 @@ namespace ChefNear.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<Order>> GetOrdersWithDetails(string chefId, int pageNo, int pageSize, bool active = true)
         {
+            // Filter -> Ordering -> Skip & Take
             return await _db.Orders
                 .Include(o => o.Client)
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderItems)
                     .ThenInclude(o => o.Dish)
-                .Where(o => o.IsActive == active)
+                .Where(o => o.IsActive == active && chefId == o.ChefId)
+                .OrderByDescending(o => o.CreatedAt).ThenBy(o => o.Id)
                 .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize)
-                .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
     }
