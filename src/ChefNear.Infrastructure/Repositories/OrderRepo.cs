@@ -44,7 +44,6 @@ namespace ChefNear.Infrastructure.Repositories
                     .ThenInclude(o => o.Dish)
                 .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize)
-                .Where(o => o.Status < OrderStatus.Delivered && o.DeliveredAt == null && o.CanceledAt == null)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
