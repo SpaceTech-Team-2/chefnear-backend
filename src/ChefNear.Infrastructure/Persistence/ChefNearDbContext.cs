@@ -12,6 +12,7 @@ namespace ChefNear.Infrastructure.Persistence
         {
         }
         public DbSet<RefreshToken> RefreshTokens { get; set; }  
+        public DbSet<DeviceToken> DeviceTokens { get; set; }
 
         public DbSet<Chef> Chefs { get; set; }
         public DbSet<Client> Clients { get; set; }

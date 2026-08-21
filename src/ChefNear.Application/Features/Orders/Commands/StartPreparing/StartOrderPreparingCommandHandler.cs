@@ -31,6 +31,7 @@ public class StartOrderPreparingCommandHandler(
 
         var notification = new Notification
         {
+            Title = "Dishes Preparing", 
             Message = "Your order is being prepared!",
             Status = NotificationStatus.Pending,
             OrderId = order.Id,
@@ -41,10 +42,10 @@ public class StartOrderPreparingCommandHandler(
         await unitOfWork.Notifications.AddAsync(notification);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Send In-App Notification
         await notificationService.SendAsync(
             notification.UserId,
             notification.Id,
+            notification.Title,
             notification.Message,
             notification.Type
         );

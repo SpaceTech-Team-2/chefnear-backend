@@ -1,5 +1,7 @@
 using Asp.Versioning;
-using ChefNear.Application.Features.Notifications.Commands;
+using ChefNear.Application.Features.Notifications.Commands.ClearAllNotifications;
+using ChefNear.Application.Features.Notifications.Commands.DeleteNotification;
+using ChefNear.Application.Features.Notifications.Commands.RegisterDeviceToken;
 using ChefNear.Application.Features.Notifications.Queries.GetNotifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,5 +41,14 @@ public class NotificationsController : BaseApiController
         var command = new ClearAllNotificationsCommand(user.Id);
         var result = await Mediator.Send(command);
         return HandleResult(result, "All notifications cleared successfully.");
+    }
+
+    [HttpPost("device-tokens")]
+    public async Task<IActionResult> RegisterDeviceToken([FromBody] string token)
+    {
+        var command = new RegisterDeviceTokenCommand(token, GetUser().Id);
+
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
     }
 }

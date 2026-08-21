@@ -31,6 +31,7 @@ public class MarkOrderAsReadyCommandHandler(
 
         var notification = new Notification
         {
+            Title = "Order Delivery",
             Message = "Your order is ready and waiting for delivery!",
             Status = NotificationStatus.Pending,
             OrderId = order.Id,
@@ -41,10 +42,10 @@ public class MarkOrderAsReadyCommandHandler(
         await unitOfWork.Notifications.AddAsync(notification);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Send In-App Notification
         await notificationService.SendAsync(
             notification.UserId,
             notification.Id,
+            notification.Title,
             notification.Message,
             notification.Type
         );

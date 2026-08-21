@@ -47,6 +47,7 @@ public class UnitOfWork : IUnitOfWork
     public IPaymentRepo Payments => paymentRepo ??= new PaymentRepo(_dbContext);
     public IWalletRepo Wallets { get => walletRepo ??= new WalletRepo(_dbContext); set => walletRepo = value; }
     public IWalletTransactionRepo Transactions { get => walletTransactionRepo ??= new WalletTransactionRepo(_dbContext); set => walletTransactionRepo = value; }
+    public IDeviceTokenRepo DeviceTokens => new DeviceTokenRepo(_dbContext);
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
