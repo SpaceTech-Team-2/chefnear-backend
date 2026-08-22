@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using ChefNear.Application.Features.Dish.DTOs;
+using ChefNear.Application.Features.Dish.Queries.GetChefDishes;
 using ChefNear.Application.Features.Dish.Queries.GetDishByIdQuery;
 using ChefNear.Application.Features.Dishes.Commands;
 using ChefNear.Application.Features.Dishes.Queries.GetNearbyDishesQuery;
@@ -32,6 +33,15 @@ public class DishesController : BaseApiController
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await Mediator.Send(new GetDishByIdQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpGet("/api/v{version:apiVersion}/Chef/{chefId:guid}/Dishes")]
+    [ProducesResponseType<ApiResponse<List<DishSummaryDto>>>(StatusCodes.Status200OK)]
+    [Authorize]
+    public async Task<IActionResult> GetChefDishes(string chefId) 
+    {
+        var result = await Mediator.Send(new GetChefDishesQuery(chefId));
         return HandleResult(result);
     }
 

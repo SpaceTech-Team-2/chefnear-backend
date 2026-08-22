@@ -14,6 +14,15 @@ public class DishRepo : GenericRepository<Dish>, IDishRepo
         _context = context;
     }
 
+    public async Task<List<Dish>> GetDishesByChefId(string chefId)
+    {
+        return await _context.Dishes
+            .Include(d => d.Chef)
+            .Include(d => d.Images)
+            .Where(d => d.ChefId == chefId)
+            .ToListAsync();
+    }
+
     public async Task<List<Dish>> GetNearbyDishesAsync()
     {
         return await _context.Dishes
