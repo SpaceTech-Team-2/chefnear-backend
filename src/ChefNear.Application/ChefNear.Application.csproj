@@ -16,7 +16,6 @@
 		<Folder Include="Features\Auth\Mappings\" />
 		<Folder Include="Features\Auth\Queries\" />
 		<Folder Include="Common\Behaviours\" />
-		<Folder Include="Features\Notifications\Commands\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.2.0" />

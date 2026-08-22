@@ -18,6 +18,10 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
                 .HasMaxLength(500)
                 .IsRequired();
 
+            builder.Property(n => n.Title)
+                .HasMaxLength(30)
+                .HasDefaultValue(string.Empty);
+
             builder.Property(n => n.Status)
                 .HasDefaultValue(NotificationStatus.Pending);
 

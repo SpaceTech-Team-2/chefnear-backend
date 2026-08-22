@@ -1,9 +1,11 @@
+using ChefNear.Application.Common.Jobs;
 using ChefNear.Application.Common.Persistence.Interfaces;
 using ChefNear.Application.Interfaces;
 using ChefNear.Domain.Entities;
 using ChefNear.Domain.Enums;
 using ChefNear.Domain.Errors;
 using ChefNear.Shared.ResultPattern;
+using Hangfire;
 using HomeChefMarketplace.Domain.Enums;
 using MediatR;
 
@@ -14,12 +16,12 @@ public class AcceptOrderCommandHandler(
     INotificationService notificationService
     ) : IRequestHandler<AcceptOrderCommand, Result>
 {
-    private readonly IUnitOfWork unitOfWork = unitOfWork;
-    private readonly INotificationService notificationService = notificationService;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly INotificationService _notificationService = notificationService;
 
     public async Task<Result> Handle(AcceptOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await unitOfWork.Orders.GetAsync(o => o.Id == request.OrderId && o.ChefId == request.Chef.Id);
+        var order = await _unitOfWork.Orders.GetAsync(o => o.Id == request.OrderId && o.ChefId == request.Chef.Id);
 
         if (order == null)
             return Result.Failure(DomainErrors.Order.OrderNotFound);
@@ -28,10 +30,11 @@ public class AcceptOrderCommandHandler(
             return Result.Failure(DomainErrors.Order.OrderMustBeConfirmed);
 
         order.Accept();
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var notification = new Notification
         {
+            Title = "Order Status Updated",
             Message = "Your order has been accepted by the chef.",
             Status = NotificationStatus.Pending,
             OrderId = order.Id,
@@ -39,13 +42,13 @@ public class AcceptOrderCommandHandler(
             UserId = order.ClientId
         };
 
-        await unitOfWork.Notifications.AddAsync(notification);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.Notifications.AddAsync(notification);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Send In-App Notification
-        await notificationService.SendAsync(
+        await _notificationService.SendAsync(
             notification.UserId,
             notification.Id,
+            notification.Title,
             notification.Message,
             notification.Type
         );

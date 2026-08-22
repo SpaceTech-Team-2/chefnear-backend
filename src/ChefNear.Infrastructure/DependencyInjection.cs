@@ -12,10 +12,13 @@ using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Repositories;
 using ChefNear.Infrastructure.Services;
 using ChefNear.Infrastructure.Settings;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 namespace ChefNear.Infrastructure;
 
@@ -31,11 +34,11 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString)
                    .EnableSensitiveDataLogging());
 
-
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.Configure<AppUrlSettings>(configuration.GetSection("AppUrlSettings"));
         services.Configure<PaymobSettings>(configuration.GetSection("PaymentGateway:Paymob"));
         services.Configure<FrontendSettings>(configuration.GetSection("FrontendSettings"));
+        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));   
 
         services.AddSignalR();
 
@@ -50,6 +53,25 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<ChefNearDbContext>()
         .AddDefaultTokenProviders();
 
+        var firebaseCredentials = configuration.GetSection("Firebase")
+            .GetChildren()
+            .ToDictionary(
+                x => x.Key,
+                x => x.Value
+            );
+
+        if (firebaseCredentials.TryGetValue("private_key", out var privateKey))
+        {
+            firebaseCredentials["private_key"] = privateKey?.Replace("\\n", "\n");
+        }
+
+        var firebaseJsonCredentials = JsonSerializer.Serialize(firebaseCredentials);
+
+        FirebaseApp.Create(new AppOptions()
+        {
+            Credential = CredentialFactory.FromJson(firebaseJsonCredentials, JsonCredentialParameters.ServiceAccountCredentialType)
+        });
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepo, UserRepo>();
         services.AddScoped<IChefRepo, ChefRepo>();
@@ -62,6 +84,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepo, NotificationRepo>();
         services.AddScoped<IOrderRepo, OrderRepo>();
         services.AddScoped<IPaymentRepo, PaymentRepo>();
+        services.AddScoped<IDeviceTokenRepo, DeviceTokenRepo>();
         services.AddScoped<IReviewRepo, ReviewRepo>();
         services.AddScoped<IFileStorageService, CloudinaryFileStorageService>();
         services.AddTransient<IEmailService, EmailService>();
@@ -69,12 +92,13 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IDbInitializer, DbInitializer>();
-        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));   
         services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
         services.AddScoped<IPaymobService, PaymobService>();
-        services.AddScoped<IAddChefEarningsJob, AddChefEarningsJob>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IPushNotificationService, PushNotificationService>();
 
+        services.AddScoped<IAddChefEarningsJob, AddChefEarningsJob>();
+        services.AddScoped<IPushNotificationJob, PushNotificationJob>();
         return services;
     }
 }
