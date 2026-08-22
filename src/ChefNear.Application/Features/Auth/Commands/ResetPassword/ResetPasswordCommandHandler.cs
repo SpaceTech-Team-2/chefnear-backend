@@ -38,7 +38,7 @@ namespace ChefNear.Application.Features.Auth.Commands.ResetPassword
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(x => x.Description));
-                return Result.Failure(Error.Failure("Auth.ResetPasswordFailed", errors));
+                return Result.Failure(Error.Validation("Auth.ResetPasswordFailed", errors));
             }
 
             await _refreshTokenService.RevokeRefreshTokenAsync(user.Id.ToString());

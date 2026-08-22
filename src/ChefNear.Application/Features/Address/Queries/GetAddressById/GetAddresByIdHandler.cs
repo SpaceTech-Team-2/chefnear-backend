@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ChefNear.Application.Features.Address.Queries.GetAddressById
 {
-    public class GetAddresByIdHandler : IRequestHandler<GetAddressByIdQuery, Result<AddressDto>>
+    public class GetAddresByIdHandler : IRequestHandler<GetAddressByIdQuery, Result<GetAddressDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -16,17 +16,17 @@ namespace ChefNear.Application.Features.Address.Queries.GetAddressById
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Result<AddressDto>> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetAddressDto>> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
             var address = await _unitOfWork.Adresses.GetByIdAsync(request.AddressId);
 
             if (address == null)
             {
-                return Result.Failure<AddressDto>(
+                return Result.Failure<GetAddressDto>(
                     Error.NotFound("Address.NotFound", "Address not found."));
             }
 
-            var dto = new AddressDto
+            var dto = new GetAddressDto
             {
                 Id = address.Id,
                 Label = address.Label,

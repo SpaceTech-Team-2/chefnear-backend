@@ -6,7 +6,7 @@ public class AddressProfile : Profile
 {
     public AddressProfile()
     {
-        CreateMap<AddressDto, Domain.Entities.Address>();
+        CreateMap<CreateAddressDto, Domain.Entities.Address>();
     }
 
 }

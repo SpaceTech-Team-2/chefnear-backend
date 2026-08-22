@@ -53,7 +53,7 @@ namespace ChefNear.Application.Features.Auth.Commands.changePassword
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 _logger.LogWarning("Change password failed for user {Email}: {Errors}", user.Email, errors);
-                return Error.Failure("Auth.ChangePasswordFailed", errors);
+                return Error.Validation("Auth.ChangePasswordFailed", errors);
             }
 
             await _unitOfWork.SaveChangesAsync();

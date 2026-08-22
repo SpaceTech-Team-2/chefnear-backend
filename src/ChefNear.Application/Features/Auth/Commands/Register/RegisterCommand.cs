@@ -15,5 +15,5 @@ public record RegisterCommand(
     string DisplayName,
     string Description,
     UserRole Role,
-    AddressDto? Address
+    CreateAddressDto? Address
 ) : IRequest<Result<RegisterResponse>>;

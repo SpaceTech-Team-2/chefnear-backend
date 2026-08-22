@@ -19,6 +19,6 @@ public class OrderProfile : Profile
             .ForMember(dto => dto.Items, opt => opt.MapFrom(src => src.OrderItems))
             .ForMember(dto => dto.Address, opt => opt.MapFrom(src => src.DeliveryAddress));
 
-        CreateMap<Domain.Entities.Address, AddressDto>();
+        CreateMap<Domain.Entities.Address, GetAddressDto>();
     }
 }

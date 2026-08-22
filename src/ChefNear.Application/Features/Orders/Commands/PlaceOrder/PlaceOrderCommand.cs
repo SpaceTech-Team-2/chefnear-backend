@@ -13,7 +13,7 @@ public record PlaceOrderRequest(Guid IdempotencyKey,
     List<OrderItemRequest> Items,
     string Notes,
     Guid? DeliveryAddressId,
-    AddressDto? DeliveryAddress,
+    CreateAddressDto? DeliveryAddress,
     PaymentGateway PaymentGateway,
     OrderFulfillmentType OrderFulfillmentType
 );
@@ -23,7 +23,7 @@ public record PlaceOrderCommand(
     List<OrderItemRequest> Items,
     string Notes,
     Guid? DeliveryAddressId,
-    AddressDto? DeliveryAddress,
+    CreateAddressDto? DeliveryAddress,
     PaymentGateway PaymentGateway,
     OrderFulfillmentType OrderFulfillmentType,
     CurrentUser Client

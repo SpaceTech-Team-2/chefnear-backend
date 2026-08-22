@@ -18,7 +18,7 @@ public class GetOrderByIdDto
     public string? Notes { get; set; }
 
     public Guid DeliveryAddressId { get; set; }
-    public AddressDto Address { get; set; }
+    public GetAddressDto Address { get; set; }
 
     public string ChefId { get; set; } = string.Empty;
     public string ChefName { get; set; } = string.Empty;

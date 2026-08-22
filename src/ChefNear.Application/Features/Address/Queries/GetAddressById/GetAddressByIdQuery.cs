@@ -4,4 +4,4 @@ using MediatR;
 
 namespace ChefNear.Application.Features.Address.Queries.GetAddressById;
 
-public record GetAddressByIdQuery(Guid AddressId) : IRequest<Result<AddressDto>>;
+public record GetAddressByIdQuery(Guid AddressId) : IRequest<Result<GetAddressDto>>;
