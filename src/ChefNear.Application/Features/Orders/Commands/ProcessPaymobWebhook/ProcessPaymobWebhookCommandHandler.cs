@@ -115,6 +115,7 @@ public class ProcessPaymobWebhookCommandHandler(
 
             var notification = new Notification
             {
+                Title = "New Order",
                 Message = "You have received a new order!",
                 Status = NotificationStatus.Pending,
                 OrderId = order.Id,
@@ -125,10 +126,10 @@ public class ProcessPaymobWebhookCommandHandler(
             await _unitOfWork.Notifications.AddAsync(notification);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // Send In-App Nontification
             await notificationService.SendAsync(
                 notification.UserId,
                 notification.Id,
+                notification.Title,
                 notification.Message,
                 notification.Type
             );

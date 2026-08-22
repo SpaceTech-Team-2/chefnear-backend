@@ -46,6 +46,7 @@ public class MarkAsDeliveredCommandHandler(
 
         var notification = new Notification
         {
+            Title = "Order Delivered",
             Message = "Your order has been delivered to the client!",
             Status = NotificationStatus.Pending,
             OrderId = order.Id,
@@ -56,10 +57,10 @@ public class MarkAsDeliveredCommandHandler(
         await unitOfWork.Notifications.AddAsync(notification);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Send In-App Notification
         await notificationService.SendAsync(
             notification.UserId,
             notification.Id,
+            notification.Title,
             notification.Message,
             notification.Type
         );

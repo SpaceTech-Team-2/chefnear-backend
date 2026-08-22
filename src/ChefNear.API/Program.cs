@@ -9,12 +9,14 @@ using ChefNear.Infrastructure;
 using ChefNear.Infrastructure.Hubs;
 using ChefNear.Infrastructure.Persistence;
 using ChefNear.Infrastructure.Seed;
+using ChefNear.Shared.Responses;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 Log.Logger = new LoggerConfiguration()
@@ -73,6 +75,47 @@ try
             ValidAudience = jwtSettings.Audience,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                if (context.Response.HasStarted)
+                    return;
+
+                context.HandleResponse(); // stops default behavior
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer
+                    .Serialize(ApiResponse.FailureResponse(
+                        "No access token provided",
+                        "You are not authorized. Please provide a valid token.",
+                        401
+                    ));
+
+                await context.Response.WriteAsync(result);
+            },
+
+            OnForbidden = async context =>
+            {
+                if (context.Response.HasStarted)
+                    return;
+
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer
+                    .Serialize(
+                        ApiResponse.FailureResponse(
+                            "You haven't perssions to access this resource",
+                            "You do not have permission to access this resource.",
+                            403
+                        ));
+
+                await context.Response.WriteAsync(result);
+            }
         };
     });
 

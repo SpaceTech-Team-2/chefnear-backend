@@ -4,4 +4,4 @@ using MediatR;
 
 namespace ChefNear.Application.Features.Addresses.Queries;
 
-public record GetUserAddressesQuery(Guid UserId) : IRequest<Result<List<AddressDto>>>;
+public record GetUserAddressesQuery(Guid UserId) : IRequest<Result<List<GetAddressDto>>>;

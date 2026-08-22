@@ -21,6 +21,7 @@ public class CancelOrderCommandHandler(
     private readonly IPaymentGatewayFactory _paymentGatewayFactory = paymentGatewayFactory;
     private readonly ILogger<CancelOrderCommandHandler> _logger = logger;
     private readonly INotificationService _notificationService = notificationService;
+
     public async Task<Result> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
     {
         var order = await _unitOfWork.Orders.GetByIdWithDetailsAsync(request.OrderId);
@@ -81,6 +82,7 @@ public class CancelOrderCommandHandler(
 
             var notification = new Notification
             {
+                Title = "Order Cancelled",
                 Message = isClient
                     ? "Your order has been cancelled."
                     : "The client has cancelled the order.",
@@ -93,10 +95,10 @@ public class CancelOrderCommandHandler(
             await _unitOfWork.Notifications.AddAsync(notification);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // In-App Notification
             await _notificationService.SendAsync(
                 notification.UserId,
                 notification.Id,
+                notification.Title,
                 notification.Message,
                 notification.Type
             );

@@ -7,7 +7,7 @@ using MediatR;
 namespace ChefNear.Application.Features.Addresses.Queries;
 
 public class GetUserAddressesQueryHandler
-    : IRequestHandler<GetUserAddressesQuery,Result<List<AddressDto>>>
+    : IRequestHandler<GetUserAddressesQuery,Result<List<GetAddressDto>>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,7 +16,7 @@ public class GetUserAddressesQueryHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<List<AddressDto>>> Handle(
+    public async Task<Result<List<GetAddressDto>>> Handle(
         GetUserAddressesQuery request,
         CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class GetUserAddressesQueryHandler
             addresses
                 .Where(a => a.ClientId == request.UserId.ToString())
                 .OrderByDescending(a => a.IsDefault)
-                .Select(a => new AddressDto
+                .Select(a => new GetAddressDto
                 {
                     Id = a.Id,
                     Label = a.Label,

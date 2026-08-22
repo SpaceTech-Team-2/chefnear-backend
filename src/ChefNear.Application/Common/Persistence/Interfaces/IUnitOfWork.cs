@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     IIngredientsRepo Ingredients  { get; }
     IOrderRepo Orders  { get; }
     IReviewRepo Reviews { get; }
+    IDeviceTokenRepo DeviceTokens { get; }
     IUserRepo Users { get; }
     IChefRepo Chefs { get; }
     IClientRepo Clients { get; }

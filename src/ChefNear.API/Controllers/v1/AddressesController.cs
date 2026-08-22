@@ -1,7 +1,9 @@
 using Asp.Versioning;
+using ChefNear.Application.Features.Address.DTOs;
 using ChefNear.Application.Features.Address.Queries.GetAddressById;
 using ChefNear.Application.Features.Addresses.Commands;
 using ChefNear.Application.Features.Addresses.Queries;
+using ChefNear.Shared.Responses;
 using HomeChefMarketplace.Application.Features.Addresses.Commands;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +15,12 @@ namespace ChefNear.API.Controllers.v1;
 [Route("api/v{version:apiVersion}/[controller]")]
 [Produces("application/json")]
 [Consumes("application/json")]
+[ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
 [Authorize]
 public class AddressesController : BaseApiController
 {
     [HttpGet("my")]
+    [ProducesResponseType<ApiResponse<List<GetAddressDto>>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMyAddresses()
     {
         var userId = Guid.Parse(GetUser().Id);
@@ -28,6 +32,7 @@ public class AddressesController : BaseApiController
     }
 
     [HttpPost]
+    [ProducesResponseType<ApiResponse<Guid>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(
       [FromBody] CreateAddressRequest request)
     {
@@ -50,6 +55,8 @@ public class AddressesController : BaseApiController
     }
 
     [HttpPut("{addressId:guid}")]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
          Guid addressId,
          [FromBody] UpdateAddressRequest request)
@@ -74,6 +81,8 @@ public class AddressesController : BaseApiController
     }
 
     [HttpDelete("{addressId:guid}")]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid addressId)
     {
         var userId = Guid.Parse(GetUser().Id);
@@ -88,6 +97,7 @@ public class AddressesController : BaseApiController
     }
 
     [HttpGet("{addressId:guid}")]
+    [ProducesResponseType<ApiResponse<GetAddressDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetById(Guid addressId)
     {
         var result = await Mediator.Send(
