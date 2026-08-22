@@ -6,6 +6,7 @@ using ChefNear.Application.Features.Orders.Commands.MarkAsReady;
 using ChefNear.Application.Features.Orders.Commands.PlaceOrder;
 using ChefNear.Application.Features.Orders.Commands.StartPreparing;
 using ChefNear.Application.Features.Orders.DTOs;
+using ChefNear.Application.Features.Orders.Queries.GetChefOrders;
 using ChefNear.Application.Features.Orders.Queries.GetOrderById;
 using ChefNear.Shared.Constants;
 using ChefNear.Shared.Responses;
@@ -151,6 +152,21 @@ public class OrdersController : BaseApiController
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var query = new GetOrderByIdQuery(id, GetUser());
+
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = UserRoles.Chef)]
+    public async Task<IActionResult> GetChefOrders([FromQuery] GetChefOrdersRequest request)
+    {
+        var query = new GetChefOrdersQuery(
+            GetUser(),
+            request.IsActive,
+            request.PageNumber,
+            request.PageSize
+        );
 
         var result = await Mediator.Send(query);
         return HandleResult(result);

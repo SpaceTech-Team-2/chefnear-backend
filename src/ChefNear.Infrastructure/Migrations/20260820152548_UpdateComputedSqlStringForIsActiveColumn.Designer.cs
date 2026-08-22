@@ -4,6 +4,7 @@ using ChefNear.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChefNear.Infrastructure.Migrations
 {
     [DbContext(typeof(ChefNearDbContext))]
-    partial class ChefNearDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820152548_UpdateComputedSqlStringForIsActiveColumn")]
+    partial class UpdateComputedSqlStringForIsActiveColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,13 +357,6 @@ namespace ChefNear.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)")
                         .HasDefaultValue("Pending");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("");
 
                     b.Property<string>("Type")
                         .IsRequired()

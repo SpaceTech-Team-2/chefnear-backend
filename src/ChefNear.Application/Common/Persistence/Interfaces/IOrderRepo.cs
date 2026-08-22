@@ -9,5 +9,6 @@ namespace ChefNear.Application.Common.Persistence.Interfaces
     {
         Task<Order?> GetByIdWithDetailsAsync(Guid id);
         Task<Order> GetByIdWithTrackingAsync(Guid id);
+        Task<IReadOnlyList<Order>> GetOrdersWithDetails(string chefId, int pageNo, int pageSize, bool active = true);
     }
 }

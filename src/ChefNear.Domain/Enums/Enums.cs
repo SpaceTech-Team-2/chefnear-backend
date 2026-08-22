@@ -27,7 +27,7 @@ public enum OrderStatus
     Confirmed = 2,
     Accepted = 3,
     Preparing = 4,
-    ReadyForDelivery = 5,
+    OutForDelivery = 5,
     Delivered = 6,
     Cancelled = 7
 }

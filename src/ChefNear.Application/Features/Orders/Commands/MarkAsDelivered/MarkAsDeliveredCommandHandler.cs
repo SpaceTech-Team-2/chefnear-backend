@@ -30,7 +30,7 @@ public class MarkAsDeliveredCommandHandler(
         if (order == null)
             return Result.Failure(DomainErrors.Order.OrderNotFound);
 
-        if (order.Status != OrderStatus.ReadyForDelivery)
+        if (order.Status != OrderStatus.OutForDelivery)
             return Result.Failure(DomainErrors.Order.OrderMustBeReady);
 
         var payment = order.Payment;

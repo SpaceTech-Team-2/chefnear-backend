@@ -37,6 +37,8 @@ namespace ChefNear.Domain.Entities
         public DateTime? DeliveredAt { get; private set; }
         public DateTime? CanceledAt { get; private set; }
 
+        public bool IsActive { get; }
+
         public Payment? Payment { get; set; }
         public ICollection<Review> Reviews { get; set; } = new List<Review>(); public Dispute? Dispute { get; set; }
 
@@ -74,7 +76,7 @@ namespace ChefNear.Domain.Entities
 
         public void MarkAsReady(decimal? deliveryFee = null,TimeSpan? estimatedDeliveryTime = null)
         {
-            Status = OrderStatus.ReadyForDelivery;
+            Status = OrderStatus.OutForDelivery;
             if (estimatedDeliveryTime.HasValue)
                 EstimatedDeliveryTime = estimatedDeliveryTime.Value;
 

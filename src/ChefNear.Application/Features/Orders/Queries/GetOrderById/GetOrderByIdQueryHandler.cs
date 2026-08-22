@@ -54,7 +54,7 @@ public class GetOrderByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : 
             },
             new OrderTrackingDto
             {
-                Status = OrderStatus.ReadyForDelivery,
+                Status = OrderStatus.OutForDelivery,
                 Timestamp = order.ReadyAt,
                 Completed = order.ReadyAt.HasValue
             },

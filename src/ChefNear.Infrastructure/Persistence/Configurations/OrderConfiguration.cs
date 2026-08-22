@@ -27,6 +27,16 @@ namespace ChefNear.Infrastructure.Persistence.Configurations
             builder.Property(o => o.CancellationReasonType)
                 .IsRequired(false);
 
+            builder.Property(o => o.IsActive)
+                .HasComputedColumnSql("""
+                    CASE
+                        WHEN [Status] <> 'Delivered' AND [Status] <> 'Cancelled'
+                        THEN CAST(1 AS bit)
+                        ELSE CAST(0 AS bit)
+                    END
+                    """
+                ); // o.Status < OrderStatus.Delivered && o.DeliveredAt == null && o.CanceledAt == null
+
             // Relationships
 
             // Order (M) → User (1) (Client)
