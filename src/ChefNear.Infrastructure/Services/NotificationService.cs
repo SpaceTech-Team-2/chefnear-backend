@@ -46,6 +46,6 @@ internal class NotificationService(
 
         // Enque Push Notificaiton Job
         _backgroundJobClient
-            .Schedule(() => _pushNotificationJob.ExecuteAsync(notificationId), TimeSpan.FromMinutes(2));
+            .Schedule(() => _pushNotificationJob.ExecuteAsync(notificationId), TimeSpan.FromSeconds(20));
     }
 }

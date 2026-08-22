@@ -53,15 +53,19 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<ChefNearDbContext>()
         .AddDefaultTokenProviders();
 
-        var firebaseSection = configuration.GetSection("Firebase");
+        var firebaseCredentials = configuration.GetSection("Firebase")
+            .GetChildren()
+            .ToDictionary(
+                x => x.Key,
+                x => x.Value
+            );
 
-        var firebaseJsonCredentials = JsonSerializer.Serialize(
-            firebaseSection.GetChildren()
-                .ToDictionary(
-                    x => x.Key,
-                    x => x.Value
-                )
-        );
+        if (firebaseCredentials.TryGetValue("private_key", out var privateKey))
+        {
+            firebaseCredentials["private_key"] = privateKey?.Replace("\\n", "\n");
+        }
+
+        var firebaseJsonCredentials = JsonSerializer.Serialize(firebaseCredentials);
 
         FirebaseApp.Create(new AppOptions()
         {
