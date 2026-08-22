@@ -159,6 +159,7 @@ public class OrdersController : BaseApiController
 
     [HttpGet]
     [Authorize(Roles = UserRoles.Chef)]
+    [ProducesResponseType<ApiResponse<List<ChefOrderDto>>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChefOrders([FromQuery] GetChefOrdersRequest request)
     {
         var query = new GetChefOrdersQuery(

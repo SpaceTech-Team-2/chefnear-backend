@@ -12,6 +12,6 @@ public class ChefOrderDto
     public string ClientId { get; set; } = string.Empty!;
     public string ClientName { get; set; } = string.Empty!;
 
-    public AddressDto Address { get; set; } = default!;
+    public GetAddressDto Address { get; set; } = default!;
     public List<OrderItemDto> Items { get; set; } = new();
 }
