@@ -32,17 +32,20 @@ namespace ChefNear.Infrastructure.Seed
 
                 if (adminUser == null)
                 {
-                    adminUser = new Admin
-                    {
-                        UserName = adminEmail,
-                        Email = adminEmail,
-                        DisplayName = "Admin",
-                        Role = UserRole.Admin,
-                        EmailConfirmed=true,
-                        Status = UserStatus.Active
-                    };
+                adminUser = new Admin
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    DisplayName = "Admin",
+                    Role = UserRole.Admin,
+                    EmailConfirmed = true,
+                    Status = UserStatus.Active,
+                    FirstName = "Admin",
+                    LastName = "ChefNear",
+                    PhoneNumber = "01000000000"
+                };
 
-                    var result = await userManager.CreateAsync(adminUser, "Admin@123456");
+                var result = await userManager.CreateAsync(adminUser, "Admin@123456");
 
                     if (result.Succeeded)
                         await userManager.AddToRoleAsync(adminUser, "Admin");

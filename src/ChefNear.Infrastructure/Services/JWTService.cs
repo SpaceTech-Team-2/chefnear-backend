@@ -25,15 +25,15 @@ namespace ChefNear.Infrastructure.Services
         public async Task<JwtSecurityToken> CreateJwtToken(User user, IList<string> roles)
         {
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
-                new Claim("FName", user.FirstName),
-                new Claim("LName", user.LastName),
-                new Claim("PhoneNumber", user.PhoneNumber)
-            };
+{
+    new Claim(ClaimTypes.NameIdentifier, user.Id),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    new Claim(ClaimTypes.Role, user.Role.ToString()),
+    new Claim("FName", user.FirstName ?? string.Empty),
+    new Claim("LName", user.LastName ?? string.Empty),
+    new Claim("PhoneNumber", user.PhoneNumber ?? string.Empty)
+};
 
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
