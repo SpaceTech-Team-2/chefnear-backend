@@ -113,6 +113,8 @@ HTTP Controller
 
 ## API and Security
 
+- Deployed Swagger UI: [https://chefnear.runasp.net/swagger/index.html](https://chefnear.runasp.net/swagger/index.html)
+- Deployed API base URL: `https://chefnear.runasp.net`
 - Versioned routes using URL segments (for example, `/api/v1/dishes`)
 - Swagger/OpenAPI with JWT bearer support in the Development environment
 - JWT authentication and ASP.NET Identity
